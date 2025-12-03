@@ -33,7 +33,7 @@
 
             <Button
                 android:id="@+id/button"
-                android:layout_width="150dp"
+                android:layout_width="155dp"
                 android:layout_height="wrap_content"
                 android:text="Button" />
 
@@ -50,7 +50,7 @@
             <Button
                 android:id="@+id/button1"
                 android:layout_gravity="right"
-                android:layout_width="150dp"
+                android:layout_width="155dp"
                 android:layout_height="wrap_content"
                 android:text="Button" />
 
