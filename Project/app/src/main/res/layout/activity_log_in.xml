@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".LogIn">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="30dp"
+        android:gravity="center"
+        android:text="Welcome back"
+        android:textSize="20dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="50dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/editTextEmail"
+                android:layout_width="250dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:textSize="18sp"
+                android:hint="Enter your email: "
+                />
+
+            <EditText
+                android:id="@+id/editTextPassword"
+                android:layout_marginTop="20dp"
+                android:layout_width="250dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:textSize="18sp"
+                android:hint="Enter your password:"
+                android:inputType="textPassword"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/logIn"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Log in"
+                android:textSize="16dp"
+                />
+
+            <Button
+                android:id="@+id/signIn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="To Sign In"
+                android:layout_marginTop="20dp"
+                android:textSize="16dp"
+                />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
+

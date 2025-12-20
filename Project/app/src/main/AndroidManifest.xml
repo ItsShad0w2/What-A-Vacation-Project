@@ -12,6 +12,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.WhatAVacationProject">
         <activity
+            android:name=".tripsLayout"
+            android:exported="false" />
+        <activity
+            android:name=".SignIn"
+            android:exported="false" />
+        <activity
+            android:name=".LogIn"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
