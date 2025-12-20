@@ -30,7 +30,6 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class SignIn extends AppCompatActivity
 {
-
     EditText editTextEmail, editTextPassword, editTextName;
     Button signIn, logIn;
 
