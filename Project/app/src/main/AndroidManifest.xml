@@ -12,6 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.WhatAVacationProject">
         <activity
+            android:name=".TripCreation"
+            android:exported="false" />
+        <activity
+            android:name=".TripDetails"
+            android:exported="false" />
+        <activity
             android:name=".tripsLayout"
             android:exported="false" />
         <activity

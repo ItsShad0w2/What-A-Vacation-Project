@@ -28,10 +28,13 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.io.StringBufferInputStream;
+
 public class SignIn extends AppCompatActivity
 {
     EditText editTextEmail, editTextPassword, editTextName;
     Button signIn, logIn;
+    private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -81,6 +84,10 @@ public class SignIn extends AppCompatActivity
                     progressDialog.dismiss();
                     if (task.isSuccessful()) 
                     {
+                        userId = firebaseAuth.getCurrentUser().getUid();
+                        User newUser = new User(userId, name);
+                        Firebase.referenceUser.child(userId).setValue(newUser);
+
                         FirebaseUser user = firebaseAuth.getCurrentUser();
                         if (user != null)
                         {
