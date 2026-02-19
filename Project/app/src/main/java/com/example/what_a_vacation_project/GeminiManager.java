@@ -6,11 +6,11 @@ import com.google.ai.client.generativeai.GenerativeModel;
 public class GeminiManager
 {
     private GeminiManager instance;
-    //private final GenerativeModel gemini;
+    private final GenerativeModel gemini;
 
-    public GeminiManager()
+    public GeminiManager(GenerativeModel gemini)
     {
-
+        gemini = new GenerativeModel("gemini-2.5-flash", BuildConfig.GeminiAPIKey);
     }
 
     public GenerativeModel getInstance()

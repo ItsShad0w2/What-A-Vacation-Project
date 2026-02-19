@@ -1,12 +1,26 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.google.gms.google.services)
+}
+
+val localProperties = Properties()
+val propertiesFile = rootProject.file("local.properties")
+if(propertiesFile.exists())
+{
+    localProperties.load(FileInputStream(propertiesFile))
 }
 
 android {
     namespace = "com.example.what_a_vacation_project"
     compileSdk {
         version = release(36)
+    }
+
+    buildFeatures{
+        buildConfig = true
     }
 
     defaultConfig {
@@ -16,6 +30,7 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        buildConfigField ("String", "GeminiAPIKey", "\"${localProperties.getProperty("GeminiAPIKey")}\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -32,6 +47,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
 }
 
 dependencies {
