@@ -52,8 +52,20 @@
                 android:layout_width="200dp"
                 android:layout_height="45dp"
                 android:gravity="center"
+                android:layout_marginTop="60dp"
                 android:hint="Enter the trip's name:"
                 android:textSize="16dp" />
+
+            <EditText
+                android:id="@+id/generateTripDetails"
+                android:layout_width="200dp"
+                android:layout_height="45dp"
+                android:gravity="center"
+                android:textSize="12dp"
+                android:hint="Enter your preferences of the trip: ">
+
+            </EditText>
+
 
         </LinearLayout>
 
@@ -70,7 +82,22 @@
                 android:layout_height="65dp"
                 android:hint="Select a country: "
                 android:textSize="14dp"
-                android:gravity="center" />
+                android:gravity="center"
+                android:layout_marginTop="150dp"/>
+
+            <TextView
+                android:id="@+id/conditionView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:layout_marginTop="25dp"/>
+
+            <ImageView
+                android:id="@+id/levelView"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:layout_marginTop="25dp"/>
+
 
         </LinearLayout>
 
@@ -80,6 +107,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+
+        <Button
+            android:id="@+id/generateTripButton"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:text="Generate a trip: "
+            android:textSize="20dp"/>
 
         <Button
             android:id="@+id/setTripButton"

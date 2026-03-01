@@ -1,6 +1,8 @@
 import java.io.FileInputStream
 import java.util.Properties
 
+
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.google.gms.google.services)
@@ -19,7 +21,7 @@ android {
         version = release(36)
     }
 
-    buildFeatures{
+    buildFeatures {
         buildConfig = true
     }
 
@@ -31,6 +33,7 @@ android {
         versionName = "1.0"
 
         buildConfigField ("String", "GeminiAPIKey", "\"${localProperties.getProperty("GeminiAPIKey")}\"")
+        manifestPlaceholders["GoogleMapsAPIKey"] = "${localProperties.getProperty("GoogleMapsAPIKey")}"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -59,7 +62,14 @@ dependencies {
     implementation(libs.firebase.database)
     implementation(libs.generativeai)
     implementation(libs.recyclerview)
+    implementation(libs.gson);
+    implementation(libs.google.maps)
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
+    implementation("com.squareup.okhttp3:okhttp:4.9.3")
     implementation(libs.protolite.well.known.types)
+    implementation(libs.firebase.crashlytics.buildtools)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

@@ -1,25 +1,61 @@
 package com.example.what_a_vacation_project;
 
-import com.google.ai.client.generativeai.BuildConfig;
+import androidx.annotation.NonNull;
+
 import com.google.ai.client.generativeai.GenerativeModel;
+import com.google.ai.client.generativeai.type.Content;
+import com.google.ai.client.generativeai.type.GenerateContentResponse;
+
+import java.util.Collections;
+
+import kotlin.Result;
+import kotlin.coroutines.Continuation;
+import kotlin.coroutines.CoroutineContext;
+import kotlin.coroutines.EmptyCoroutineContext;
 
 public class GeminiManager
 {
-    private GeminiManager instance;
+    private static GeminiManager instance;
     private final GenerativeModel gemini;
 
-    public GeminiManager(GenerativeModel gemini)
+    public GeminiManager()
     {
         gemini = new GenerativeModel("gemini-2.5-flash", BuildConfig.GeminiAPIKey);
     }
 
-    public GenerativeModel getInstance()
+    public static GeminiManager getInstance()
     {
         if(instance == null)
         {
             instance = new GeminiManager();
         }
 
-        return instance.getInstance();
+        return instance;
+    }
+
+    public void generateTrip(String prompt, GeminiCallBack callBack)
+    {
+        gemini.generateContent(prompt, new Continuation<GenerateContentResponse>()
+        {
+            @NonNull
+            @Override
+            public CoroutineContext getContext()
+            {
+                return EmptyCoroutineContext.INSTANCE;
+            }
+
+            @Override
+            public void resumeWith(@NonNull Object response)
+            {
+                if(response instanceof Result.Failure)
+                {
+                    callBack.onFailure(((Result.Failure) response).exception);
+                }
+                else
+                {
+                    callBack.onSuccess(((GenerateContentResponse) response).getText());
+                }
+            }
+        });
     }
 }

@@ -1,9 +1,15 @@
 package com.example.what_a_vacation_project;
+
+import com.google.gson.annotations.SerializedName;
+
 public class Condition
 {
+    @SerializedName("title")
     private String title;
+    @SerializedName("field_overall_advice_level")
     private String field_overall_advice_level;
     private String field_last_update;
+    @SerializedName("changed")
     private String changed;
     private String field_url;
 
@@ -35,12 +41,10 @@ public class Condition
     {
         return changed;
     }
-
     public String getField_url()
     {
         return field_url;
     }
-
     public void setTitle(String title)
     {
         this.title = title;
@@ -64,5 +68,15 @@ public class Condition
     public void setField_url(String field_url)
     {
         this.field_url = field_url;
+    }
+
+    public String toString()
+    {
+        return  "The Advice for this country is: '" + field_overall_advice_level + '\'' +
+                "\n" +
+                ",\n lastUpdate: '" + changed + '\'' +
+                "\n";
+
+
     }
 }
