@@ -54,7 +54,7 @@ public class TripDetails extends AppCompatActivity
     TextView conditionView;
     ImageView levelView;
     ImageButton calendarButton;
-    Button setTripButton, generateTripButton;
+    Button generateTripButton;
     private String startDate = "";
     private String endDate = "";
     private List<String> listedCountries = new ArrayList<>();
@@ -77,7 +77,6 @@ public class TripDetails extends AppCompatActivity
         tripName = findViewById(R.id.tripName);
         generateTripDetails = findViewById(R.id.generateTripDetails);
         calendarButton = findViewById(R.id.calendarButton);
-        setTripButton = findViewById(R.id.setTripButton);
         generateTripButton = findViewById(R.id.generateTripButton);
         conditionView = findViewById(R.id.conditionView);
         levelView = findViewById(R.id.levelView);

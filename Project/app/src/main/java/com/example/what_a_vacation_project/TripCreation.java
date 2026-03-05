@@ -161,10 +161,11 @@ public class TripCreation extends AppCompatActivity
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot)
             {
-                if (!snapshot.exists()) {
+                if (!snapshot.exists())
+                {
                     progressDialog.dismiss();
                     Toast.makeText(TripCreation.this, "An error has occurred while generating the trip", Toast.LENGTH_SHORT).show();
-                    return;
+                    returnToTripDetails();
                 }
 
                 Log.d("Trip Creation", "Snapshot does exist");
@@ -186,13 +187,24 @@ public class TripCreation extends AppCompatActivity
                                 Log.d("Response", responseGiven);
                                 Map<String, List<Location>> locations = convertTrip(responseGiven);
 
-                                if (locations != null && !locations.isEmpty())
+                                if (locations != null)
                                 {
-                                    setDaysSpinner(locations, daysSpinner);
+                                    if (!locations.isEmpty())
+                                    {
+                                        setDaysSpinner(locations, daysSpinner);
+                                    }
+                                    else
+                                    {
+                                        progressDialog.dismiss();
+                                        Toast.makeText(TripCreation.this, "The preference for the trip don't seem to be related to a one, make sure to change it accordingly.", Toast.LENGTH_LONG).show();
+                                        returnToTripDetails();
+                                    }
                                 }
                                 else
                                 {
-                                    Toast.makeText(TripCreation.this, "An error has occurred while generating the trip", Toast.LENGTH_SHORT).show();
+                                    progressDialog.dismiss();
+                                    Toast.makeText(TripCreation.this, "An error has occurred while generating the trip.", Toast.LENGTH_SHORT).show();
+                                    returnToTripDetails();
                                 }
                             });
                         }
@@ -218,6 +230,7 @@ public class TripCreation extends AppCompatActivity
                     progressDialog.dismiss();
                     Toast.makeText(TripCreation.this, "An error has occurred while generating the trip", Toast.LENGTH_SHORT).show();
                     Log.d("Exception", exception.getMessage());
+                    returnToTripDetails();
                 }
 
             }
@@ -227,6 +240,7 @@ public class TripCreation extends AppCompatActivity
             {
                 progressDialog.dismiss();
                 Toast.makeText(TripCreation.this, "An error has occurred while generating the trip", Toast.LENGTH_SHORT).show();
+                returnToTripDetails();
             }
         });
     }
@@ -324,5 +338,11 @@ public class TripCreation extends AppCompatActivity
 
     }
 
+    public void returnToTripDetails()
+    {
+        Intent intent = new Intent (TripCreation.this, TripDetails.class);
+        intent.putExtra("tripId", tripId);
+        startActivity(intent);
+    }
 
 }
