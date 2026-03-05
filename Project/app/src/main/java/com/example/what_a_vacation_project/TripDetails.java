@@ -3,6 +3,7 @@ package com.example.what_a_vacation_project;
 import static com.example.what_a_vacation_project.Firebase.getReferenceTrip;
 import static com.example.what_a_vacation_project.Firebase.referenceUser;
 
+import android.app.ComponentCaller;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -87,44 +88,7 @@ public class TripDetails extends AppCompatActivity
             currentTripId = getIntent().getStringExtra("tripId");
         }
 
-        if (currentTripId != null)
-        {
-            getReferenceTrip(Firebase.firebaseAuth.getUid()).child(currentTripId).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (snapshot.exists())
-                    {
-                        originalName = snapshot.child("Name").getValue(String.class).trim();
-                        originalCountry = snapshot.child("Country").getValue(String.class).trim();
-                        originalDescription = snapshot.child("Description").getValue(String.class).trim();
-                        originalStartDate = snapshot.child("StartDate").getValue(String.class);
-                        originalEndDate = snapshot.child("EndDate").getValue(String.class);
-
-                        tripName.setText(originalName);
-                        countries.setText(originalCountry);
-                        generateTripDetails.setText(originalDescription);
-                        startDate = originalStartDate;
-                        endDate = originalEndDate;
-
-                        if(!countries.getText().toString().isEmpty() && countries != null)
-                        {
-                            countryAdvice();
-                        }
-
-                        setCalendar(originalStartDate, originalEndDate);
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-
-                }
-            });
-        }
-        else
-        {
-            setCalendar("", "");
-        }
+        loadExistingTrip();
 
         generateTripButton.setOnClickListener(View -> {
             setTrip();
@@ -142,6 +106,61 @@ public class TripDetails extends AppCompatActivity
         });
     }
 
+    public void loadExistingTrip()
+    {
+        if(currentTripId != null)
+        {
+            getReferenceTrip(Firebase.firebaseAuth.getUid()).child(currentTripId).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot)
+                {
+                    if(snapshot.exists())
+                    {
+                        originalName = snapshot.child("Name").getValue(String.class);
+                        originalCountry = snapshot.child("Country").getValue(String.class);
+                        originalDescription = snapshot.child("Description").getValue(String.class);
+                        originalStartDate = snapshot.child("StartDate").getValue(String.class);
+                        originalEndDate = snapshot.child("EndDate").getValue(String.class);
+
+                        tripName.setText(originalName);
+                        countries.setText(originalCountry);
+                        generateTripDetails.setText(originalDescription);
+
+                        if(!countries.getText().toString().isEmpty() && countries != null)
+                        {
+                            countryAdvice();
+                        }
+
+                        setCalendar(originalStartDate, originalEndDate);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error)
+                {
+                    Toast.makeText(TripDetails.this, "An error has occurred while loading the trip", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+        else
+        {
+            setCalendar("", "");
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent)
+    {
+        super.onNewIntent(intent);
+
+        setIntent(intent);
+
+        if(getIntent().hasExtra("tripId"))
+        {
+            currentTripId = getIntent().getStringExtra("tripId");
+            loadExistingTrip();
+        }
+    }
 
     public void countryAdvice()
     {
@@ -168,9 +187,6 @@ public class TripDetails extends AppCompatActivity
             Toast.makeText(this, "An error has occurred.", Toast.LENGTH_SHORT).show();
         }
     }
-
-
-
 
     private boolean hasChanged()
     {

@@ -142,7 +142,8 @@ public class TripCreation extends AppCompatActivity
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+            public void onCancelled(@NonNull DatabaseError error)
+            {
 
             }
         });
@@ -342,6 +343,7 @@ public class TripCreation extends AppCompatActivity
     {
         Intent intent = new Intent (TripCreation.this, TripDetails.class);
         intent.putExtra("tripId", tripId);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
     }
 
