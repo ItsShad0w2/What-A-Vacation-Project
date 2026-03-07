@@ -40,7 +40,6 @@ public class tripsLayout extends AppCompatActivity
     Button addTrip;
     List<Trip> tripsList = new ArrayList<>();
     private long dayInMillis = 86400000;
-    private long hourInMillis = 3600000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -165,6 +164,7 @@ public class tripsLayout extends AppCompatActivity
             if (alarmManager != null)
             {
                 alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
+                Log.d("AlarmManager", "Alarm was set");
             }
         }
     }

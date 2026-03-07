@@ -3,10 +3,8 @@ package com.example.what_a_vacation_project;
 import androidx.annotation.NonNull;
 
 import com.google.ai.client.generativeai.GenerativeModel;
-import com.google.ai.client.generativeai.type.Content;
 import com.google.ai.client.generativeai.type.GenerateContentResponse;
 
-import java.util.Collections;
 
 import kotlin.Result;
 import kotlin.coroutines.Continuation;

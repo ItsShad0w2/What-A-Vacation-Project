@@ -1,7 +1,5 @@
 package com.example.what_a_vacation_project;
 
-import android.app.AlertDialog;
-import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;

@@ -1,13 +1,10 @@
 package com.example.what_a_vacation_project;
 
 import static com.example.what_a_vacation_project.Firebase.getReferenceTrip;
-import static com.example.what_a_vacation_project.Firebase.referenceUser;
 
-import android.app.ComponentCaller;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -16,7 +13,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,9 +40,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.TimeZone;
-import java.util.concurrent.atomic.AtomicReferenceArray;
 
 public class TripDetails extends AppCompatActivity
 {

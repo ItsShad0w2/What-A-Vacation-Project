@@ -49,7 +49,11 @@
             android:value="${GoogleMapsAPIKey}">
         </meta-data>
 
-        <receiver android:name=".DateAlarmReceiver"></receiver>
+        <receiver
+            android:name=".DateAlarmReceiver"
+            android:enabled="true"
+            android:exported="false">
+        </receiver>
     </application>
 
 </manifest>
