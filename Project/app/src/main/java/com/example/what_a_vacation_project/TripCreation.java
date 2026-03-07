@@ -1,7 +1,5 @@
 package com.example.what_a_vacation_project;
 
-import static com.example.what_a_vacation_project.BuildConfig.GeminiAPIKey;
-
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
@@ -23,8 +21,11 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.gson.reflect.TypeToken;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -45,6 +46,7 @@ public class TripCreation extends AppCompatActivity
     GoogleMap googleMapFragment;
     Button previousScreen, homePage;
     private GeminiManager geminiManager;
+    private PlacesClient placesClient;
     private String tripId;
 
     @Override
@@ -65,6 +67,13 @@ public class TripCreation extends AppCompatActivity
 
         Log.d("Country", Firebase.getReferenceTrip(Firebase.firebaseAuth.getUid()).child(tripId).child("Country").toString());
 
+        if(!Places.isInitialized())
+        {
+            Places.initialize(getApplicationContext(), BuildConfig.GooglePlacesAPIKey);
+        }
+
+        placesClient = Places.createClient(this);
+
         if(supportMapFragment != null)
         {
             supportMapFragment.getMapAsync(new OnMapReadyCallback()
@@ -73,6 +82,8 @@ public class TripCreation extends AppCompatActivity
                 public void onMapReady(@NonNull GoogleMap googleMap)
                 {
                     googleMapFragment = googleMap;
+
+                    googleMapFragment.setInfoWindowAdapter(new InformationWindowAdapter(TripCreation.this, placesClient));
 
                     if(change)
                     {
@@ -323,12 +334,20 @@ public class TripCreation extends AppCompatActivity
                 .width(10)
                 .geodesic(true);
 
+        InformationWindowAdapter informationWindowAdapter = new InformationWindowAdapter(this, placesClient);
+        googleMapFragment.setInfoWindowAdapter(informationWindowAdapter);
+
         for(Location location: locations)
         {
             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-            googleMapFragment.addMarker(new MarkerOptions()
+            Marker marker = googleMapFragment.addMarker(new MarkerOptions()
                     .position(latLng)
                     .title(location.getLocationName()));
+
+            if(marker != null)
+            {
+                informationWindowAdapter.getPlaceImage(location.getLocationName(), marker);
+            }
 
             path.add(latLng);
             builder.include(latLng);

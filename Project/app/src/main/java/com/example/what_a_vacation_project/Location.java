@@ -7,27 +7,19 @@ public class Location
     @SerializedName("name")
     private String locationName;
     private String startDate;
-    private String description;
+    private String placeId;
     private String endDate;
     @SerializedName("lat")
     private double latitude;
     @SerializedName("lng")
     private double longitude;
 
-    public Location(String locationName, String description, String startDate, String endDate, double latitude, double longitude)
+    public Location(String locationName, String placeId, String startDate, String endDate, double latitude, double longitude)
     {
         this.locationName = locationName;
-        this.description = description;
+        this.placeId = placeId;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.latitude = latitude;
-        this.longitude = longitude;
-    }
-
-    public Location(String locationName, double latitude, double longitude)
-    {
-        this.locationName = locationName;
-        this.description = description;
         this.latitude = latitude;
         this.longitude = longitude;
     }
@@ -42,9 +34,9 @@ public class Location
         return locationName;
     }
 
-    public String getDescription()
+    public String getPlaceId()
     {
-        return description;
+        return placeId;
     }
 
     public String getStartDate()
@@ -72,9 +64,9 @@ public class Location
         this.locationName = locationName;
     }
 
-    public void setDescription(String description)
+    public void setDescription(String placeId)
     {
-        this.description = description;
+        this.placeId = placeId;
     }
 
     public void setStartDate(String startDate)

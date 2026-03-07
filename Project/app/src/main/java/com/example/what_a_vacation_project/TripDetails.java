@@ -122,6 +122,9 @@ public class TripDetails extends AppCompatActivity
                         originalStartDate = snapshot.child("StartDate").getValue(String.class);
                         originalEndDate = snapshot.child("EndDate").getValue(String.class);
 
+                        startDate = originalStartDate;
+                        endDate = originalEndDate;
+
                         tripName.setText(originalName);
                         countries.setText(originalCountry);
                         generateTripDetails.setText(originalDescription);
@@ -198,8 +201,8 @@ public class TripDetails extends AppCompatActivity
         String currentCountry = countries.getText().toString().trim();
         String currentDescription = generateTripDetails.getText().toString().trim();
 
-        return  !currentCountry.equals(originalCountry) ||
-                !currentDescription.equals(originalDescription) ||
+        return  !currentCountry.equals(originalCountry.trim()) ||
+                !currentDescription.equals(originalDescription.trim()) ||
                 !startDate.equals(originalStartDate) ||
                 !endDate.equals(originalEndDate);
     }
@@ -298,17 +301,21 @@ public class TripDetails extends AppCompatActivity
                 Date startDate = simpleDateFormat.parse(originalStartDate);
                 Date endDate = simpleDateFormat.parse(originalEndDate);
 
-                if(startDate.getTime() < current)
+                if(startDate != null && endDate != null)
                 {
-                    constraints.setValidator(DateValidatorPointForward.from(startDate.getTime()));
-                }
-                else
-                {
-                    constraints.setValidator(DateValidatorPointForward.from(current));
+                    if (startDate.getTime() < current)
+                    {
+                        constraints.setValidator(DateValidatorPointForward.from(startDate.getTime()));
+                    }
+                    else
+                    {
+                        constraints.setValidator(DateValidatorPointForward.from(current));
+                    }
+
+                    builder.setSelection(Pair.create(startDate.getTime(), endDate.getTime()));
+                    constraints.setOpenAt(startDate.getTime());
                 }
 
-                builder.setSelection(Pair.create(startDate.getTime(), endDate.getTime()));
-                constraints.setOpenAt(startDate.getTime());
             }
             catch (Exception exception)
             {

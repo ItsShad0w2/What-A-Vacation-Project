@@ -33,6 +33,7 @@ android {
         versionName = "1.0"
 
         buildConfigField ("String", "GeminiAPIKey", "\"${localProperties.getProperty("GeminiAPIKey")}\"")
+        buildConfigField ("String", "GooglePlacesAPIKey", "\"${localProperties.getProperty("GooglePlacesAPIKey")}\"")
         manifestPlaceholders["GoogleMapsAPIKey"] = "${localProperties.getProperty("GoogleMapsAPIKey")}"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -64,6 +65,7 @@ dependencies {
     implementation(libs.recyclerview)
     implementation(libs.gson);
     implementation(libs.google.maps)
+    implementation("com.google.android.libraries.places:places:5.1.1")
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
