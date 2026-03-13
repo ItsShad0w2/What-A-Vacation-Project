@@ -53,7 +53,14 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder
         });
 
         holder.itemView.setOnLongClickListener(view -> {
-            listener.onTripLongClick(trip, position);
+
+            int currentPosition = holder.getBindingAdapterPosition();
+
+            if(currentPosition != RecyclerView.NO_POSITION)
+            {
+                listener.onTripLongClick(trip, position);
+            }
+
             return true;
         });
 

@@ -27,7 +27,7 @@ public class Notification
                 NotificationCompat.Builder(context, CHANNEL_ID)
                 .setContentTitle("Trip Reminder")
                 .setContentText("Your " + tripName + " trip is coming up")
-                .setSmallIcon(R.drawable.airplane)
+                .setSmallIcon(R.drawable.ic_stat_name)
                 .setAutoCancel(true)
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
 

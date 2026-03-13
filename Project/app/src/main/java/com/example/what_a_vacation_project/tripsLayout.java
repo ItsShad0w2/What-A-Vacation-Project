@@ -8,15 +8,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -27,8 +22,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
+
 import java.util.List;
 import java.util.Locale;
 
@@ -39,7 +33,6 @@ public class tripsLayout extends AppCompatActivity
     TripAdapter adapter;
     Button addTrip;
     List<Trip> tripsList = new ArrayList<>();
-    private long dayInMillis = 86400000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -109,7 +102,7 @@ public class tripsLayout extends AppCompatActivity
                     {
                         trip.setIdTrip(tripSnapshot.getKey());
                         tripsList.add(trip);
-                        setScheduleAlarm(trip);
+                        setScheduleAlarm(tripsLayout.this, trip);
                     }
                 }
 
@@ -133,6 +126,7 @@ public class tripsLayout extends AppCompatActivity
             Firebase.getReferenceTrip(Firebase.firebaseAuth.getUid()).child(trip.getIdTrip()).removeValue().addOnCompleteListener(aVoid -> {
                 tripsList.remove(position);
                 adapter.notifyItemRemoved(position);
+                adapter.notifyItemRangeChanged(position, tripsList.size());
                 cancelScheduleAlarm(trip);
             });
 
@@ -145,27 +139,60 @@ public class tripsLayout extends AppCompatActivity
         builder.show();
     }
 
-    public void setScheduleAlarm(Trip trip)
+    public static void setScheduleAlarm(Context context, Trip trip)
     {
+        if(trip == null)
+        {
+            return;
+        }
+
+        if(trip.getIdTrip() == null)
+        {
+            Log.d("AlarmManager", "There is no ID to the trip " + trip.getName());
+            return;
+        }
+
         long tripTime = convertDateToMillis(trip.getStartDate());
         long currentTime = System.currentTimeMillis();
 
-        if ((tripTime - currentTime) >= dayInMillis)
+        long dayInMillis = 86400000;
+        long hourInMillis = 3600000;
+
+        long alarmTime;
+
+        if(tripTime < currentTime)
         {
-            AlarmManager alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+            return;
+        }
 
-            Intent intent = new Intent(this, DateAlarmReceiver.class);
-            intent.putExtra("tripName", trip.getName());
-            int requestID = trip.getIdTrip().hashCode();
-
-            long alarmTime = tripTime - dayInMillis;
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(this, requestID, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-
-            if (alarmManager != null)
+        if((tripTime - currentTime) >= dayInMillis)
+        {
+            alarmTime = tripTime - dayInMillis;
+        }
+        else
+        {
+            if((tripTime - currentTime) >= hourInMillis)
             {
-                alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
-                Log.d("AlarmManager", "Alarm was set");
+                alarmTime = tripTime - hourInMillis;
             }
+            else
+            {
+                alarmTime = currentTime + 2000;
+            }
+        }
+
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+        Intent intent = new Intent(context, DateAlarmReceiver.class);
+        intent.putExtra("tripName", trip.getName());
+        int requestID = trip.getIdTrip().hashCode();
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, requestID, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+        if (alarmManager != null)
+        {
+            alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
+            Log.d("AlarmManager", "Alarm was set");
         }
     }
 
@@ -184,7 +211,7 @@ public class tripsLayout extends AppCompatActivity
         }
     }
 
-    public long convertDateToMillis(String date)
+    public static long convertDateToMillis(String date)
     {
         try
         {
@@ -207,4 +234,3 @@ public class tripsLayout extends AppCompatActivity
         return 0;
     }
 }
-
