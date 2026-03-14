@@ -211,77 +211,74 @@ public class TripDetails extends AppCompatActivity
 
     public void setTrip()
     {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM)
+        if (tripName.getText().toString().isEmpty() || startDate.isEmpty() || endDate.isEmpty() || countries.getText().toString().isEmpty() || generateTripDetails.getText().toString().isEmpty()) {
+            Toast.makeText(this, "Please fill in all of the required fields", Toast.LENGTH_SHORT).show();
+        }
+        else
         {
-            if (tripName.getText().isEmpty() || startDate.isEmpty() || endDate.isEmpty() || countries.getText().isEmpty() || generateTripDetails.getText().isEmpty()) {
-                Toast.makeText(this, "Please fill in all of the required fields", Toast.LENGTH_SHORT).show();
+            boolean countryFound = false;
+            for (String country : listedCountries)
+            {
+                if (country.equals(countries.getText().toString()))
+                {
+                    countryFound = true;
+                    break;
+                }
+            }
+
+            if (!countryFound)
+            {
+                countries.setText("");
+                Toast.makeText(this, "Invalid Country", Toast.LENGTH_SHORT).show();
             }
             else
             {
-                boolean countryFound = false;
-                for (String country : listedCountries)
+                boolean changed = hasChanged();
+                String userId = Firebase.firebaseAuth.getUid();
+
+                if (userId != null)
                 {
-                    if (country.equals(countries.getText().toString()))
+                    DatabaseReference referenceUser = getReferenceTrip(userId);
+
+                    if (currentTripId == null)
                     {
-                        countryFound = true;
-                        break;
+                        currentTripId = referenceUser.push().getKey();
                     }
-                }
 
-                if (!countryFound)
-                {
-                    countries.setText("");
-                    Toast.makeText(this, "Invalid Country", Toast.LENGTH_SHORT).show();
-                }
-                else
-                {
-                    boolean changed = hasChanged();
-                    String userId = Firebase.firebaseAuth.getUid();
-
-                    if (userId != null)
+                    if (currentTripId != null)
                     {
-                        DatabaseReference referenceUser = getReferenceTrip(userId);
+                        Map<String, Object> tripData = new HashMap<>();
 
-                        if (currentTripId == null)
+                        tripData.put("Name", tripName.getText().toString());
+                        tripData.put("StartDate", startDate);
+                        tripData.put("EndDate", endDate);
+                        tripData.put("Country", countries.getText().toString());
+                        tripData.put("Description", generateTripDetails.getText().toString());
+
+                        referenceUser.child(currentTripId).updateChildren(tripData).addOnCompleteListener(task ->
                         {
-                            currentTripId = referenceUser.push().getKey();
-                        }
-
-                        if (currentTripId != null)
-                        {
-                            Map<String, Object> tripData = new HashMap<>();
-
-                            tripData.put("Name", tripName.getText().toString());
-                            tripData.put("StartDate", startDate);
-                            tripData.put("EndDate", endDate);
-                            tripData.put("Country", countries.getText().toString());
-                            tripData.put("Description", generateTripDetails.getText().toString());
-
-                            referenceUser.child(currentTripId).updateChildren(tripData).addOnCompleteListener(task ->
+                            if (task.isSuccessful())
                             {
-                                if (task.isSuccessful())
-                                {
-                                    originalName = tripName.getText().toString();
-                                    originalCountry = countries.getText().toString();
-                                    originalDescription = generateTripDetails.getText().toString();
-                                    originalStartDate = startDate;
-                                    originalEndDate = endDate;
+                                originalName = tripName.getText().toString();
+                                originalCountry = countries.getText().toString();
+                                originalDescription = generateTripDetails.getText().toString();
+                                originalStartDate = startDate;
+                                originalEndDate = endDate;
 
 
-                                    Intent intent = new Intent(this, TripCreation.class);
-                                    intent.putExtra("tripId", currentTripId);
-                                    intent.putExtra("change", changed);
-                                    startActivity(intent);
-                                }
-                            });
-                        }
-
+                                Intent intent = new Intent(this, TripCreation.class);
+                                intent.putExtra("tripId", currentTripId);
+                                intent.putExtra("change", changed);
+                                startActivity(intent);
+                            }
+                        });
                     }
+
                 }
             }
         }
-
     }
+
     public void setCalendar(String originalStartDate, String originalEndDate)
     {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault());
