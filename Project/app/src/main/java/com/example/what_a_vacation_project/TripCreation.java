@@ -65,8 +65,6 @@ public class TripCreation extends AppCompatActivity
 
         SupportMapFragment supportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.googleMapFragment);
 
-        Log.d("Country", Firebase.getReferenceTrip(Firebase.firebaseAuth.getUid()).child(tripId).child("Country").toString());
-
         if(!Places.isInitialized())
         {
             Places.initialize(getApplicationContext(), BuildConfig.GooglePlacesAPIKey);
@@ -196,7 +194,6 @@ public class TripCreation extends AppCompatActivity
                         {
                             runOnUiThread(() -> {
                                 progressDialog.dismiss();
-                                Log.d("Response", responseGiven);
                                 Map<String, List<Location>> locations = convertTrip(responseGiven);
 
                                 if (locations != null)
@@ -229,7 +226,6 @@ public class TripCreation extends AppCompatActivity
                                 if(progressDialog.isShowing() && progressDialog != null)
                                 {
                                     progressDialog.dismiss();
-                                    Log.d("Flow", "The code stops because of " + exception.getMessage());
                                 }
                             });
 
