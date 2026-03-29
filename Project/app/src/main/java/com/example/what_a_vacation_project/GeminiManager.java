@@ -23,6 +23,8 @@ public class GeminiManager
 
     public static GeminiManager getInstance()
     {
+        // Ensuring that there is a single instance of the GeminiManager class
+
         if(instance == null)
         {
             instance = new GeminiManager();
@@ -33,6 +35,8 @@ public class GeminiManager
 
     public void generateTrip(String prompt, GeminiCallBack callBack)
     {
+        // Generating a trip using the Gemini API
+
         gemini.generateContent(prompt, new Continuation<GenerateContentResponse>()
         {
             @NonNull

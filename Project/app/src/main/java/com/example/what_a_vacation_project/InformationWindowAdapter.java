@@ -48,6 +48,9 @@ public class InformationWindowAdapter implements GoogleMap.InfoWindowAdapter
     @Override
     public View getInfoWindow(@NonNull Marker marker)
     {
+        // Showing the window with the details of the location marked on the map
+        // In case that the image for the location isn't stored in the map, a search for the first one using the Google Places API would occur
+
         TextView placeName = view.findViewById(R.id.placeName);
         ImageView placeImage = view.findViewById(R.id.placeImage);
 
@@ -70,6 +73,8 @@ public class InformationWindowAdapter implements GoogleMap.InfoWindowAdapter
 
     public void getPlaceImage(String placeName, Marker marker)
     {
+        // In case that the image for the location isn't stored, there would be a search for it using the Google Places API
+
         if(imagesStored.containsKey(placeName))
         {
             return;
@@ -93,6 +98,8 @@ public class InformationWindowAdapter implements GoogleMap.InfoWindowAdapter
 
     public void findPlaceImage(String placeId, String locationName, Marker marker)
     {
+        // Acquiring the first image of the location from the Google Places API and storing it inside of a map
+
         List<Place.Field> fields = Collections.singletonList(Place.Field.PHOTO_METADATAS);
         FetchPlaceRequest fetchPlaceRequest = FetchPlaceRequest.newInstance(placeId, fields);
 

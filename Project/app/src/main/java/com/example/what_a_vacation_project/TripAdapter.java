@@ -36,6 +36,8 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder
     @Override
     public void onBindViewHolder(@NonNull TripAdapter.TripViewHolder holder, int position)
     {
+        // Setting the data of a trip inside of the item stored in the recycler view
+
         Trip trip = tripList.get(position);
         holder.name.setText(trip.getName());
         holder.country.setText(trip.getCountry());
@@ -83,6 +85,8 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder
 
     public boolean isTripFinished(Trip trip)
     {
+        // In case the trip's date has passed, the trip would be marked as finished
+
         try
         {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault());
@@ -98,6 +102,7 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder
 
     public static class TripViewHolder extends RecyclerView.ViewHolder
     {
+        // Initializing the fields of an item stored in the recycler view
         TextView name, country, dates, finishedTrip;
         public TripViewHolder(@NonNull View itemView)
         {
@@ -112,6 +117,7 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder
 
     public interface onTripClickListener
     {
+        // Handle of the different actions that are able to be done on a trip inside of the recycler view
         void onTripClick(Trip trip) throws IllegalAccessException, InstantiationException;
         void onTripLongClick(Trip trip, int position);
     }

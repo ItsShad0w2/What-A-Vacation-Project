@@ -22,6 +22,8 @@ public class MainActivity extends AppCompatActivity
         buttonLogIn = findViewById(R.id.buttonLogIn);
         buttonSignIn = findViewById(R.id.buttonSignIn);
 
+        checkUserLoggedIn();
+
         buttonLogIn.setOnClickListener(view -> {
             Intent intent = new Intent(this, LogIn.class);
             startActivity(intent);
@@ -31,5 +33,17 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(this, SignIn.class);
             startActivity(intent);
         });
+    }
+
+
+    // In case the user is logged in, he would be redirected to the trips' layout screen
+    public void checkUserLoggedIn()
+    {
+        if(Firebase.firebaseAuth.getCurrentUser() != null)
+        {
+            Intent intent = new Intent(this, tripsLayout.class);
+            startActivity(intent);
+            finish();
+        }
     }
 }

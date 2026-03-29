@@ -54,6 +54,8 @@ public class SignIn extends AppCompatActivity
 
     public void signIn()
     {
+        // Signing up the user to the application and creating a new user in the database
+
         String email = this.editTextEmail.getText().toString();
         String password = this.editTextPassword.getText().toString();
         String name = this.editTextName.getText().toString();

@@ -31,7 +31,7 @@ public class tripsLayout extends AppCompatActivity
 
     RecyclerView recyclerView;
     TripAdapter adapter;
-    Button addTrip;
+    Button addTrip, logout;
     List<Trip> tripsList = new ArrayList<>();
 
     @Override
@@ -44,6 +44,7 @@ public class tripsLayout extends AppCompatActivity
 
         recyclerView = findViewById(R.id.tripsList);
         addTrip = findViewById(R.id.addTrip);
+        logout = findViewById(R.id.logout);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -65,18 +66,30 @@ public class tripsLayout extends AppCompatActivity
         });
 
         recyclerView.setAdapter(adapter);
-        loadTrips();
 
         addTrip.setOnClickListener(View -> {
             Intent intent = new Intent(this, TripDetails.class);
             startActivity(intent);
         });
 
+        logout.setOnClickListener(View -> {
+            logOut();
+        });
+    }
 
+    @Override
+    protected void onStart()
+    {
+        // Ensuring that when the screen is started, the trips are loaded with the latest data saved from the database
+
+        super.onStart();
+        loadTrips();
     }
 
     public void permissions()
     {
+        // Permission being requested to allow notifications to be sent
+
         if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S)
         {
             if(checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_DENIED)
@@ -88,6 +101,8 @@ public class tripsLayout extends AppCompatActivity
 
     public void loadTrips()
     {
+        // Loading the trips from the database and setting them in the recycler view including scheduling their alarms
+
         Firebase.getReferenceTrip(Firebase.firebaseAuth.getUid()).orderByChild("StartDate").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot)
@@ -119,6 +134,8 @@ public class tripsLayout extends AppCompatActivity
 
     public void deleteTrip(Trip trip, int position)
     {
+        // Alert dialog to confirm the deletion of a trip and rearrange the recycler view
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Delete Trip");
         builder.setMessage("Are you sure you want to delete this trip?");
@@ -127,6 +144,8 @@ public class tripsLayout extends AppCompatActivity
                 tripsList.remove(position);
                 adapter.notifyItemRemoved(position);
                 adapter.notifyItemRangeChanged(position, tripsList.size());
+
+                //Cancel the alarm in case it does exist
                 cancelScheduleAlarm(trip);
             });
 
@@ -139,8 +158,27 @@ public class tripsLayout extends AppCompatActivity
         builder.show();
     }
 
+    public void logOut()
+    {
+        // Cancel the alarms of set trips and log out the user
+
+        for(Trip trip : tripsList)
+        {
+            cancelScheduleAlarm(trip);
+        }
+
+        Firebase.firebaseAuth.signOut();
+
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+    }
+
     public static void setScheduleAlarm(Context context, Trip trip)
     {
+        // Cases of the trip not existing, cancelling the alarm
+
         if(trip == null)
         {
             return;
@@ -152,52 +190,39 @@ public class tripsLayout extends AppCompatActivity
             return;
         }
 
+        // Set the alarm to a day prior to the trip's start date
+        // That is in case that the trip wasn't set on the day it occurs
+
         long tripTime = convertDateToMillis(trip.getStartDate());
         long currentTime = System.currentTimeMillis();
 
         long dayInMillis = 86400000;
-        long hourInMillis = 3600000;
-
-        long alarmTime;
-
-        if(tripTime < currentTime)
-        {
-            return;
-        }
 
         if((tripTime - currentTime) >= dayInMillis)
         {
-            alarmTime = tripTime - dayInMillis;
-        }
-        else
-        {
-            if((tripTime - currentTime) >= hourInMillis)
+            long alarmTime = tripTime - dayInMillis;
+
+            AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+            Intent intent = new Intent(context, DateAlarmReceiver.class);
+            intent.putExtra("tripName", trip.getName());
+            intent.setAction("com.example.what_a_vacation_project.Alarm");
+            int requestID = trip.getIdTrip().hashCode();
+
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, requestID, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+            if (alarmManager != null)
             {
-                alarmTime = tripTime - hourInMillis;
+                alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
+                Log.d("AlarmManager", "Alarm was set");
             }
-            else
-            {
-                alarmTime = currentTime + 2000;
-            }
-        }
-
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-
-        Intent intent = new Intent(context, DateAlarmReceiver.class);
-        intent.putExtra("tripName", trip.getName());
-        int requestID = trip.getIdTrip().hashCode();
-
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, requestID, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-
-        if (alarmManager != null)
-        {
-            alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
-            Log.d("AlarmManager", "Alarm was set");
         }
     }
 
     public void cancelScheduleAlarm(Trip trip)
     {
+        // Cancel the alarm of a trip using the ID of the trip related to it
+
         Intent intent = new Intent(this, DateAlarmReceiver.class);
         int requestID = trip.getIdTrip().hashCode();
 
@@ -213,6 +238,8 @@ public class tripsLayout extends AppCompatActivity
 
     public static long convertDateToMillis(String date)
     {
+        // Set the time of the alarm being sent to a time around 8:00 AM
+
         try
         {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault());

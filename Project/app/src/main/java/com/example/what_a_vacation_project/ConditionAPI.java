@@ -41,6 +41,10 @@ public class ConditionAPI implements CallBack
 
     public ConditionAPI()
     {
+        // The connection towards the server to acquire the travel advice of countries
+
+        // Identification of the application to the server for the request
+
         Interceptor interceptor = chain ->
         {
             Request original = chain.request();
@@ -52,6 +56,8 @@ public class ConditionAPI implements CallBack
             return chain.proceed(request);
         };
 
+        // Acquiring of the data from the server with a timeout of thirty seconds in case of lower connection
+
         OkHttpClient client = new OkHttpClient.Builder()
                 .connectTimeout(30, TimeUnit.SECONDS)
                 .readTimeout(30, TimeUnit.SECONDS)
@@ -59,6 +65,8 @@ public class ConditionAPI implements CallBack
                 .protocols(Arrays.asList(Protocol.HTTP_1_1))
                 .addInterceptor(interceptor)
                 .build();
+
+        // Convert of the data acquired from a JSON object to a String object
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
@@ -70,6 +78,9 @@ public class ConditionAPI implements CallBack
     }
     public void getConditions(String country, Context context, CallBack callBack) throws IOException
     {
+        // In case that a day has passed, there would be a new request to acquire the latest data
+        // Otherwise, the data saved on a file would be read and used
+
         if(checkTimeStamp(context))
         {
             Log.d("APIDebug", "Processing the data..");
@@ -93,6 +104,8 @@ public class ConditionAPI implements CallBack
                             {
                                 Log.d("APIDebug ", "First condition was set " + conditionsList);
                                 writeData(conditions, context);
+
+                                // Search for the country of the trip picked from the data acquired
 
                                 for (Condition condition : conditionsList)
                                 {
@@ -139,6 +152,8 @@ public class ConditionAPI implements CallBack
                     Log.d("APIDebug", "Condition was read");
                     Gson gson = new Gson();
 
+                    // Search for the country of the trip picked from the data acquired
+
                     for(Condition condition : conditions)
                     {
                         if(condition.getTitle() != null && condition.getTitle().equalsIgnoreCase(country))
@@ -164,6 +179,8 @@ public class ConditionAPI implements CallBack
 
     public void writeData(String conditionsJson, Context context) throws FileNotFoundException
     {
+        // Writing the data acquired from the server to a file to use
+
         try
         {
             FileOutputStream fileOutputStream = context.openFileOutput(fileName, Context.MODE_PRIVATE);
@@ -183,6 +200,8 @@ public class ConditionAPI implements CallBack
 
     public boolean checkTimeStamp(Context context)
     {
+        // Check that the file has not been modified in the last day to acquire the latest data
+
         File file = context.getFileStreamPath(fileName);
 
         if(file.exists())
@@ -199,6 +218,8 @@ public class ConditionAPI implements CallBack
 
     public List<Condition> readData(Context context) throws IOException
     {
+        // Reading the data from the file it was written to
+
         try
         {
             InputStream inputStream = context.openFileInput(fileName);

@@ -8,22 +8,62 @@
     android:orientation="vertical"
     tools:context=".TripCreation">
 
-    <Spinner
-        android:id="@+id/daysSpinner"
+    <LinearLayout
+        android:id="@+id/tripView"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_gravity="top"
-        android:background="@android:color/transparent">
-    </Spinner>
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:visibility="visible">
+        <Spinner
+            android:id="@+id/daysSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_gravity="top"
+            android:background="@android:color/transparent">
+        </Spinner>
     
-    <fragment
-        android:id="@+id/googleMapFragment"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1">
+        <fragment
+            android:id="@+id/googleMapFragment"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
 
-    </fragment>
+        </fragment>
+    </LinearLayout>
+    
+    <LinearLayout
+        android:id="@+id/errorLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="An error has occurred"
+            android:textSize="20dp"/>
+
+        <Button
+            android:id="@+id/retryButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Try again"
+            android:layout_marginTop="10dp"/>
+
+        <Button
+            android:id="@+id/deleteTrip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Delete Trip"
+            android:layout_marginTop="10dp"/>
+
+    </LinearLayout>
     
     <LinearLayout
         android:layout_width="match_parent"

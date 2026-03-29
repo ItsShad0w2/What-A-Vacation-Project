@@ -110,6 +110,8 @@ public class TripDetails extends AppCompatActivity
 
     public void loadExistingTrip()
     {
+        // Load the trip's data in case that it does exist
+
         if(currentTripId != null)
         {
             getReferenceTrip(Firebase.firebaseAuth.getUid()).child(currentTripId).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -118,6 +120,8 @@ public class TripDetails extends AppCompatActivity
                 {
                     if(snapshot.exists())
                     {
+                        // Acquiring the data of the trip and the travel advice of the trip's country, setting it in the fields of the trip
+
                         originalName = snapshot.child("Name").getValue(String.class);
                         originalCountry = snapshot.child("Country").getValue(String.class);
                         originalDescription = snapshot.child("Description").getValue(String.class);
@@ -143,7 +147,7 @@ public class TripDetails extends AppCompatActivity
                 @Override
                 public void onCancelled(@NonNull DatabaseError error)
                 {
-                    Toast.makeText(TripDetails.this, "An error has occurred while loading the trip", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(com.example.what_a_vacation_project.TripDetails.this, "An error has occurred while loading the trip", Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -156,6 +160,8 @@ public class TripDetails extends AppCompatActivity
     @Override
     protected void onNewIntent(Intent intent)
     {
+        // Ensuring that when entering the screen from different activities, the trip's data is loaded in case a trip was created
+
         super.onNewIntent(intent);
 
         setIntent(intent);
@@ -169,10 +175,12 @@ public class TripDetails extends AppCompatActivity
 
     public void countryAdvice()
     {
+            // Calling the API to get the travel advice regarding the trip's country
+
         String country = countries.getText().toString();
         try
         {
-            conditionAPI.getConditions(adjustments(country), TripDetails.this, new CallBack()
+            conditionAPI.getConditions(adjustments(country), com.example.what_a_vacation_project.TripDetails.this, new CallBack()
             {
                 @Override
                 public void onSuccess(String conditions)
@@ -183,7 +191,7 @@ public class TripDetails extends AppCompatActivity
                 @Override
                 public void onFailure(String error)
                 {
-                    Toast.makeText(TripDetails.this, "An error has occurred.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(com.example.what_a_vacation_project.TripDetails.this, "An error has occurred.", Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -195,6 +203,8 @@ public class TripDetails extends AppCompatActivity
 
     private boolean hasChanged()
     {
+        // A check in case that the details of the trip have changed and generating a new one accordingly
+
         if(currentTripId == null)
         {
             return true;
@@ -208,14 +218,18 @@ public class TripDetails extends AppCompatActivity
                 !startDate.equals(originalStartDate) ||
                 !endDate.equals(originalEndDate);
     }
-
     public void setTrip()
     {
-        if (tripName.getText().toString().isEmpty() || startDate.isEmpty() || endDate.isEmpty() || countries.getText().toString().isEmpty() || generateTripDetails.getText().toString().isEmpty()) {
+        // Acquiring the data of the trip and saving it inside of the database
+
+        if (tripName.getText().toString().isEmpty() || startDate.isEmpty() || endDate.isEmpty() || countries.getText().toString().isEmpty() || generateTripDetails.getText().toString().isEmpty())
+        {
             Toast.makeText(this, "Please fill in all of the required fields", Toast.LENGTH_SHORT).show();
         }
         else
         {
+            // Checking that the country set is valid
+
             boolean countryFound = false;
             for (String country : listedCountries)
             {
@@ -233,6 +247,9 @@ public class TripDetails extends AppCompatActivity
             }
             else
             {
+                // The save of the trip's data inside of the database
+                // Ensuring that in case the details of the trip have changed from its prior, there would be a generation of a new one
+
                 boolean changed = hasChanged();
                 String userId = Firebase.firebaseAuth.getUid();
 
@@ -281,6 +298,8 @@ public class TripDetails extends AppCompatActivity
 
     public void setCalendar(String originalStartDate, String originalEndDate)
     {
+        // Setting the calendar for the trip's dates including constraints for the selection of dates
+
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault());
         simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         long current = MaterialDatePicker.todayInUtcMilliseconds();
@@ -338,6 +357,8 @@ public class TripDetails extends AppCompatActivity
 
     public String[] getCountries()
     {
+        // Acquiring from the raw folder the countries available for the user to set the trip's country to
+
         InputStream inputStream = getResources().openRawResource(R.raw.countries);
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 
@@ -363,6 +384,8 @@ public class TripDetails extends AppCompatActivity
 
     public void setCondition(String conditions)
     {
+        // Setting the travel advice for the trip's country and showing it accordingly
+
         levelView.setVisibility(View.VISIBLE);
         Gson gson = new Gson();
         Condition condition;
@@ -399,13 +422,15 @@ public class TripDetails extends AppCompatActivity
         {
             if(countries.getText().toString().equalsIgnoreCase("Australia"))
             {
+                // Due to the API being of the Australian officials' advice, a one was set to Australia itself as the API doesn't contain data on it
+
                 levelView.setImageResource(R.drawable.level1);
                 condition = new Condition(
                         "Australia",
                         "Exercise normal safety precautions",
                         "As last checked and reviewed, travelling in Australia is safe for all travellers. You may want to be alert for any kinds of protests that are occurring in the country due to potential unrest and violence if not taking caution. Take note that this is not from an official advisory and might not be up to date. You may refer to the URL below for the current and official advice.",
                         date(),
-                "https://travel.gc.ca/destinations/australia");
+                        "https://travel.gc.ca/destinations/australia");
 
                 conditionView.setText(condition.toString());
             }
@@ -419,6 +444,8 @@ public class TripDetails extends AppCompatActivity
 
     public String date()
     {
+        // Setting the current date of the travel advice to Australia to be the current date
+
         long currentTime = System.currentTimeMillis();
         SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
@@ -427,6 +454,8 @@ public class TripDetails extends AppCompatActivity
 
     public String adjustments(String country)
     {
+        // Due to the API storing specific names that don't match how most users would be likely to spell their names, there is an adjustment to the country's name
+
         if(country.equals("North Korea"))
         {
             country = "North Korea (Democratic People&#039;s Republic of Korea)";

@@ -2,7 +2,6 @@ import java.io.FileInputStream
 import java.util.Properties
 
 
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.google.gms.google.services)
@@ -72,6 +71,8 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.9.3")
     implementation(libs.protolite.well.known.types)
     implementation(libs.firebase.crashlytics.buildtools)
+    implementation(libs.work.runtime)
+    implementation(libs.concurrent.futures)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

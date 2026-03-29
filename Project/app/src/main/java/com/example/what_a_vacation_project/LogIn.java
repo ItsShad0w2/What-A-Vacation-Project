@@ -50,6 +50,7 @@ public class LogIn extends AppCompatActivity
 
     public void logIn()
     {
+        // Logging in the user to the application
         String email = editTextEmail.getText().toString();
         String password = editTextPassword.getText().toString();
 

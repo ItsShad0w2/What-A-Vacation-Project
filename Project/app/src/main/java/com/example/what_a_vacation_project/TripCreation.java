@@ -1,5 +1,6 @@
 package com.example.what_a_vacation_project;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
@@ -44,10 +45,12 @@ public class TripCreation extends AppCompatActivity
 {
     Spinner daysSpinner;
     GoogleMap googleMapFragment;
-    Button previousScreen, homePage;
+    View tripView, errorLayout;
+    Button previousScreen, homePage, retryButton, deleteTrip;
     private GeminiManager geminiManager;
     private PlacesClient placesClient;
     private String tripId;
+    private boolean change;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -55,13 +58,46 @@ public class TripCreation extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trip_creation);
 
-        tripId = getIntent().getStringExtra("tripId");
-        boolean change = getIntent().getBooleanExtra("change", true);
         geminiManager = GeminiManager.getInstance();
 
         previousScreen = findViewById(R.id.previousScreen);
         homePage = findViewById(R.id.homePage);
+        retryButton = findViewById(R.id.retryButton);
+        deleteTrip = findViewById(R.id.deleteTrip);
         daysSpinner = findViewById(R.id.daysSpinner);
+
+        errorLayout = findViewById(R.id.errorLayout);
+        tripView = findViewById(R.id.tripView);
+
+        if(savedInstanceState != null)
+        {
+            // The activity was stopped
+            // Retrieving the trip's ID, whether it is a new trip and whether there should be generation of a new trip
+
+            tripId = savedInstanceState.getString("tripId");
+            change = savedInstanceState.getBoolean("change", false);
+        }
+        else
+        {
+            // The activity wasn't stopped
+            // The trip's ID, whether it is a new trip and whether there should be generation of a new trip are retrieved from the TripDetails activity
+
+            tripId = getIntent().getStringExtra("tripId");
+            change = getIntent().getBooleanExtra("change", false);
+        }
+
+        if(tripId == null)
+        {
+            // Returning to the TripDetails activity in case the trip's ID is null
+
+            Log.d("TripId", "The trip ID is null");
+            returnToTripDetails();
+            return;
+        }
+
+        Log.d("TripId", "Intent TripID: " + tripId);
+        Log.d("TripId", "SavedInstanceID: " + (savedInstanceState != null ? savedInstanceState.getString("tripId") : "null"));
+
 
         SupportMapFragment supportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.googleMapFragment);
 
@@ -82,6 +118,12 @@ public class TripCreation extends AppCompatActivity
                     googleMapFragment = googleMap;
 
                     googleMapFragment.setInfoWindowAdapter(new InformationWindowAdapter(TripCreation.this, placesClient));
+
+                    // In case the data of the trip has changed, there would be a generation of a new one
+                    // Otherwise, the trip's data would be loaded as the trip was made
+
+
+                    Log.d("Change", "Change is " + change);
 
                     if(change)
                     {
@@ -113,6 +155,8 @@ public class TripCreation extends AppCompatActivity
 
     private void loadTrip()
     {
+        // Loading the trip's data from the database and setting it to the spinner
+
         ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setTitle("Loading Trip..");
         progressDialog.setMessage("This process may take a bit of time");
@@ -126,6 +170,13 @@ public class TripCreation extends AppCompatActivity
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot)
             {
+                if(!snapshot.exists() || snapshot.getChildrenCount() == 0)
+                {
+                    progressDialog.dismiss();
+                    generateTrip();
+                    return;
+                }
+
                 Map<String,List<Location>> locationsMap = new HashMap<>();
 
                 for(DataSnapshot daySnapshot : snapshot.getChildren())
@@ -159,6 +210,8 @@ public class TripCreation extends AppCompatActivity
     }
     private void generateTrip()
     {
+        // Generating the trip using the acquired trip's data using the Gemini API
+
         ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setTitle("Generating Trip..");
         progressDialog.setMessage("This process may take a bit of time");
@@ -185,8 +238,13 @@ public class TripCreation extends AppCompatActivity
                 String description = snapshot.child("Description").getValue(String.class);
                 String fullPrompt = LocationsPrompts.locationsStructure(country, startDate, endDate, description);
 
+
+                Log.d("Trip Creation", "The country is " + country + " and the prompt is " + fullPrompt);
+
                 try
                 {
+                    // Calling the GeminiAPI to acquire the locations for the trip
+
                     geminiManager.generateTrip(fullPrompt, new GeminiCallBack()
                     {
                         @Override
@@ -196,6 +254,8 @@ public class TripCreation extends AppCompatActivity
                                 progressDialog.dismiss();
                                 Map<String, List<Location>> locations = convertTrip(responseGiven);
 
+                                Log.d("Trip Creation", "Gemini response is " + responseGiven);
+
                                 if (locations != null)
                                 {
                                     if (!locations.isEmpty())
@@ -204,6 +264,8 @@ public class TripCreation extends AppCompatActivity
                                     }
                                     else
                                     {
+                                        // Returning to the previous screen due to the preferences not matching what is related to a trip
+
                                         progressDialog.dismiss();
                                         Toast.makeText(TripCreation.this, "The preference for the trip don't seem to be related to a one, make sure to change it accordingly.", Toast.LENGTH_LONG).show();
                                         returnToTripDetails();
@@ -211,9 +273,8 @@ public class TripCreation extends AppCompatActivity
                                 }
                                 else
                                 {
-                                    progressDialog.dismiss();
-                                    Toast.makeText(TripCreation.this, "An error has occurred while generating the trip.", Toast.LENGTH_SHORT).show();
-                                    returnToTripDetails();
+                                    Log.e("Exception", "The error for the response trip is for not having locations given");
+                                    handlingTripNotGenerating(progressDialog);
                                 }
                             });
                         }
@@ -222,23 +283,16 @@ public class TripCreation extends AppCompatActivity
                         public void onFailure(Throwable exception)
                         {
                             super.onFailure(exception);
-                            runOnUiThread(()-> {
-                                if(progressDialog.isShowing() && progressDialog != null)
-                                {
-                                    progressDialog.dismiss();
-                                }
-                            });
-
+                            Log.e("Exception", "The error for the trip generation is " + exception.getMessage());
+                            handlingTripNotGenerating(progressDialog);
 
                         }
                     });
                 }
                 catch(Exception exception)
                 {
-                    progressDialog.dismiss();
-                    Toast.makeText(TripCreation.this, "An error has occurred while generating the trip", Toast.LENGTH_SHORT).show();
-                    Log.d("Exception", exception.getMessage());
-                    returnToTripDetails();
+                    Log.e("Exception", "The error for the trip generation is " + exception.getMessage());
+                    handlingTripNotGenerating(progressDialog);
                 }
 
             }
@@ -246,18 +300,31 @@ public class TripCreation extends AppCompatActivity
             @Override
             public void onCancelled(@NonNull DatabaseError error)
             {
-                progressDialog.dismiss();
-                Toast.makeText(TripCreation.this, "An error has occurred while generating the trip", Toast.LENGTH_SHORT).show();
-                returnToTripDetails();
+                Log.e("Exception", "The error for the trip generation is " + error.getMessage());
+                handlingTripNotGenerating(progressDialog);
             }
         });
     }
 
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState)
+    {
+        // Saving the trip's ID, whether it is a new trip and whether there should be generation of a new trip when the activity is stopped
+
+        super.onSaveInstanceState(outState);
+        outState.putString("tripId", tripId);
+        outState.putBoolean("change", change);
+    }
+
     public Map<String, List<Location>> convertTrip(String response)
     {
+        // Converting the message received from the Gemini API to a map of days and their locations and saving it inside of the database
+
         if(tripId != null && response != null)
         {
             String trimmedResponse = response.replaceAll("```json|```", "").trim();
+
+            Log.d("Trip Creation", "The response is " + trimmedResponse);
 
             try
             {
@@ -282,6 +349,8 @@ public class TripCreation extends AppCompatActivity
 
     public void setDaysSpinner(Map<String, List<Location>> locations, Spinner spinner)
     {
+        // Setting the days of the trip to the spinner in an ascending order
+
         List<String> days = new ArrayList<>(locations.keySet());
 
         Collections.sort(days, (item1, item2) -> {
@@ -295,6 +364,8 @@ public class TripCreation extends AppCompatActivity
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
+        // Showing the locations of the trip according to each day of the trip on a map
+
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l)
@@ -302,7 +373,7 @@ public class TripCreation extends AppCompatActivity
                 String selectedDay = days.get(i);
                 List<Location> selectedLocations = locations.get(selectedDay);
 
-                if(googleMapFragment != null)
+                if(googleMapFragment != null && selectedLocations != null)
                 {
                     googleMapFragment.clear();
                     markLocations(selectedLocations);
@@ -319,7 +390,8 @@ public class TripCreation extends AppCompatActivity
 
     public void markLocations(List<Location> locations)
     {
-        if(locations == null)
+
+        if(locations == null || locations.isEmpty())
         {
             return;
         }
@@ -329,6 +401,8 @@ public class TripCreation extends AppCompatActivity
                 .color(Color.YELLOW)
                 .width(10)
                 .geodesic(true);
+
+        // Showing the details of the locations on the map when clicked on and setting the path of the trip
 
         InformationWindowAdapter informationWindowAdapter = new InformationWindowAdapter(this, placesClient);
         googleMapFragment.setInfoWindowAdapter(informationWindowAdapter);
@@ -350,12 +424,76 @@ public class TripCreation extends AppCompatActivity
         }
 
         googleMapFragment.addPolyline(path);
-        googleMapFragment.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 150));
 
+        // Setting the camera to the locations of the trip
+        // In case the locations are null, the camera would be set to the first location of the trip
+
+        try
+        {
+            googleMapFragment.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 150));
+        }
+        catch(IllegalStateException exception)
+        {
+            googleMapFragment.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(locations.get(0).getLatitude(), locations.get(0).getLongitude())));
+        }
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        // Clearing the places client when the activity is being destroyed
+
+        super.onDestroy();
+
+        placesClient = null;
+    }
+
+    public void handlingTripNotGenerating(ProgressDialog progressDialog)
+    {
+        // Handling the occurrence of the trip not being generated
+
+        runOnUiThread(() -> {
+           if(progressDialog.isShowing())
+           {
+               progressDialog.dismiss();
+           }
+
+           tripView.setVisibility(View.GONE);
+           errorLayout.setVisibility(View.VISIBLE);
+
+           retryButton.setOnClickListener(View -> {
+               tripView.setVisibility(View.VISIBLE);
+               errorLayout.setVisibility(View.GONE);
+               generateTrip();
+           });
+
+           // Handling of deletion of the trip in case the user would decide to delete it
+
+           deleteTrip.setOnClickListener(View -> {
+               AlertDialog.Builder builder = new AlertDialog.Builder(TripCreation.this);
+               builder.setTitle("Delete current trip");
+               builder.setMessage("Are you sure you want to delete the current trip?");
+               builder.setPositiveButton("Yes", (dialogInterface, i) -> {
+                   DatabaseReference referenceTrip = Firebase.getReferenceTrip(Firebase.firebaseAuth.getUid());
+                   referenceTrip.child(tripId).removeValue();
+
+                   Intent intent = new Intent(TripCreation.this, tripsLayout.class);
+                   startActivity(intent);
+               });
+
+               builder.setNegativeButton("No", ((dialogInterface, i) -> {
+                   dialogInterface.dismiss();
+               }));
+
+               builder.show();
+           });
+        });
     }
 
     public void returnToTripDetails()
     {
+        // A method for ensuring the user would be sent to the TripDetails screen including clearing the activity's stack
+
         Intent intent = new Intent (TripCreation.this, TripDetails.class);
         intent.putExtra("tripId", tripId);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
