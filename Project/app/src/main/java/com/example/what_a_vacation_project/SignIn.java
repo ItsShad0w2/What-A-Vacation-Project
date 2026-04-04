@@ -60,7 +60,7 @@ public class SignIn extends AppCompatActivity
         String password = this.editTextPassword.getText().toString();
         String name = this.editTextName.getText().toString();
 
-        if(email.isEmpty() || password.isEmpty())
+        if(name.isEmpty() || email.isEmpty() || password.isEmpty())
         {
             Toast.makeText(this, "Please make sure all of the fields are filled", Toast.LENGTH_SHORT).show();
         }
