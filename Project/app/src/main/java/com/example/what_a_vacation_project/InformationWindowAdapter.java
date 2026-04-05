@@ -52,10 +52,23 @@ public class InformationWindowAdapter implements GoogleMap.InfoWindowAdapter
         // In case that the image for the location isn't stored in the map, a search for the first one using the Google Places API would occur
 
         TextView placeName = view.findViewById(R.id.placeName);
+        TextView placeDescription = view.findViewById(R.id.placeDescription);
         ImageView placeImage = view.findViewById(R.id.placeImage);
 
         String locationName = marker.getTitle();
+        String description = marker.getSnippet();
+
         placeName.setText(marker.getTitle());
+
+        if(description != null && !description.isEmpty())
+        {
+            placeDescription.setText(description);
+            placeDescription.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            placeDescription.setVisibility(View.GONE);
+        }
 
         if(imagesStored.containsKey(locationName))
         {

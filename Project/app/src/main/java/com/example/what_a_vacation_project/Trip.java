@@ -1,9 +1,10 @@
 package com.example.what_a_vacation_project;
 
-import com.google.firebase.crashlytics.buildtools.reloc.com.google.j2objc.annotations.Property;
 import com.google.firebase.database.PropertyName;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class Trip
 {
@@ -12,7 +13,7 @@ public class Trip
     @PropertyName("Country")
     private String country;
     private String idTrip;
-    private ArrayList<dateTrip> datesPlanned;
+    private Map<String, List<Location>> locations;
     @PropertyName("Description")
     private String description;
     @PropertyName("StartDate")
@@ -20,13 +21,13 @@ public class Trip
     @PropertyName("EndDate")
     private String endDate;
 
-    public Trip(String name, String country, String idTrip, String description, ArrayList<dateTrip> datesPlanned, String startDate, String endDate)
+    public Trip(String name, String country, String idTrip, String description, Map<String, List<Location>> locations, String startDate, String endDate)
     {
         this.name = name;
         this.country = country;
         this.idTrip = idTrip;
         this.description = description;
-        this.datesPlanned = datesPlanned;
+        this.locations = locations;
         this.startDate = startDate;
         this.endDate = endDate;
     }
@@ -58,9 +59,9 @@ public class Trip
         return description;
     }
 
-    public ArrayList<dateTrip> getDatesPlanned()
+    public Map<String, List<Location>> getLocations()
     {
-        return datesPlanned;
+        return locations;
     }
 
     @PropertyName("StartDate")
@@ -96,9 +97,9 @@ public class Trip
     {
         this.description = description;
     }
-    public void setDatesPlanned(ArrayList<dateTrip> datesPlanned)
+    public void setLocations(Map<String, List<Location>> locations)
     {
-        this.datesPlanned = datesPlanned;
+        this.locations = locations;
     }
     @PropertyName("StartDate")
     public void setStartDate(String startDate)

@@ -35,10 +35,14 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
 import java.lang.reflect.Type;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class TripCreation extends AppCompatActivity
@@ -51,6 +55,7 @@ public class TripCreation extends AppCompatActivity
     private PlacesClient placesClient;
     private String tripId;
     private boolean change;
+    private long dayInMillis = 86400000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -236,7 +241,7 @@ public class TripCreation extends AppCompatActivity
                 String startDate = snapshot.child("StartDate").getValue(String.class);
                 String endDate = snapshot.child("EndDate").getValue(String.class);
                 String description = snapshot.child("Description").getValue(String.class);
-                String fullPrompt = LocationsPrompts.locationsStructure(country, startDate, endDate, description);
+                String fullPrompt = LocationsPrompts.locationsStructure(country, startDate, endDate, description, daysDifference(startDate, endDate));
 
 
                 Log.d("Trip Creation", "The country is " + country + " and the prompt is " + fullPrompt);
@@ -314,6 +319,28 @@ public class TripCreation extends AppCompatActivity
         super.onSaveInstanceState(outState);
         outState.putString("tripId", tripId);
         outState.putBoolean("change", change);
+    }
+
+    public long daysDifference(String startDate, String endDate)
+    {
+        // Calculating the number of days between the starting date and the end date of the trip in order to generate the trip for each day it occurs
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault());
+        long difference = 0;
+
+        try
+        {
+            Date start = simpleDateFormat.parse(startDate);
+            Date end = simpleDateFormat.parse(endDate);
+
+            difference = ((Math.abs(end.getTime() - start.getTime())) / dayInMillis) + 1;
+        }
+        catch (ParseException e)
+        {
+            throw new RuntimeException(e);
+        }
+
+        return difference;
     }
 
     public Map<String, List<Location>> convertTrip(String response)
@@ -410,9 +437,12 @@ public class TripCreation extends AppCompatActivity
         for(Location location: locations)
         {
             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-            Marker marker = googleMapFragment.addMarker(new MarkerOptions()
+            MarkerOptions markerOptions = new MarkerOptions()
                     .position(latLng)
-                    .title(location.getLocationName()));
+                    .title(location.getLocationName())
+                    .snippet(location.getDescription());
+
+            Marker marker = googleMapFragment.addMarker(markerOptions);
 
             if(marker != null)
             {

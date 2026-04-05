@@ -6,6 +6,7 @@ public class Location
 {
     @SerializedName("name")
     private String locationName;
+    private String description;
     private String startDate;
     private String placeId;
     private String endDate;
@@ -14,9 +15,10 @@ public class Location
     @SerializedName("lng")
     private double longitude;
 
-    public Location(String locationName, String placeId, String startDate, String endDate, double latitude, double longitude)
+    public Location(String locationName, String description, String placeId, String startDate, String endDate, double latitude, double longitude)
     {
         this.locationName = locationName;
+        this.description = description;
         this.placeId = placeId;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -32,6 +34,10 @@ public class Location
     public String getLocationName()
     {
         return locationName;
+    }
+    public String getDescription()
+    {
+        return description;
     }
 
     public String getPlaceId()
@@ -63,8 +69,12 @@ public class Location
     {
         this.locationName = locationName;
     }
+    public void setDescription(String description)
+    {
+        this.description = description;
+    }
 
-    public void setDescription(String placeId)
+    public void setPlaceId(String placeId)
     {
         this.placeId = placeId;
     }
