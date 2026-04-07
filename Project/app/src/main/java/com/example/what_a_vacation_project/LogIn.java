@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseNetworkException;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
@@ -83,15 +84,16 @@ public class LogIn extends AppCompatActivity
                     else
                     {
                         Exception exception = task.getException();
-                        if (exception instanceof FirebaseAuthInvalidUserException)
+
+                        if (exception instanceof FirebaseAuthInvalidCredentialsException)
                         {
-                            Toast.makeText(LogIn.this, "Invalid email address", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LogIn.this, "Invalid credentials, make sure you've entered valid email and password", Toast.LENGTH_SHORT).show();
                         }
                         else
                         {
-                            if (exception instanceof FirebaseAuthInvalidCredentialsException)
+                            if (exception instanceof FirebaseNetworkException)
                             {
-                                Toast.makeText(LogIn.this, "Invalid credentials", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(LogIn.this, "Make sure you're connected to an internet service", Toast.LENGTH_SHORT).show();
                             }
                             else
                             {

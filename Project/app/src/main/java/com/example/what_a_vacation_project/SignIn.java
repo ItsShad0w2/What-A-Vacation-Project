@@ -95,29 +95,27 @@ public class SignIn extends AppCompatActivity
                     {
                         Exception exception = task.getException();
 
-                        if (exception instanceof FirebaseAuthInvalidUserException)
+                        if (exception instanceof FirebaseAuthInvalidCredentialsException)
                         {
-                            Toast.makeText(SignIn.this, "Invalid email address, please change it", Toast.LENGTH_SHORT).show();
-                        } 
-                        else if (exception instanceof FirebaseAuthWeakPasswordException) 
-                        {
-                            Toast.makeText(SignIn.this, "The password entered is too weak, please change it", Toast.LENGTH_SHORT).show();
-                        } 
-                        else if (exception instanceof FirebaseAuthUserCollisionException)
-                        {
-                            Toast.makeText(SignIn.this, "User already exists", Toast.LENGTH_SHORT).show();
-                        } 
-                        else if (exception instanceof FirebaseAuthInvalidCredentialsException) 
-                        {
-                            Toast.makeText(SignIn.this, "Invalid credentials", Toast.LENGTH_SHORT).show();
-                        } 
-                        else if (exception instanceof FirebaseNetworkException) 
-                        {
-                            Toast.makeText(SignIn.this, "Make sure you're connected to an internet service", Toast.LENGTH_SHORT).show();
-                        } 
+                            Toast.makeText(SignIn.this, "Invalid credentials, make sure you've entered valid email and password", Toast.LENGTH_SHORT).show();
+                        }
                         else
                         {
-                            Toast.makeText(SignIn.this, "An error has occurred, please try later to sign up", Toast.LENGTH_SHORT).show();
+                            if (exception instanceof FirebaseAuthUserCollisionException)
+                            {
+                                Toast.makeText(SignIn.this, "User already exists", Toast.LENGTH_SHORT).show();
+                            }
+                            else
+                            {
+                                if (exception instanceof FirebaseNetworkException)
+                                {
+                                    Toast.makeText(SignIn.this, "Make sure you're connected to an internet service", Toast.LENGTH_SHORT).show();
+                                }
+                                else
+                                {
+                                    Toast.makeText(SignIn.this, "An error has occurred, please try later to sign up", Toast.LENGTH_SHORT).show();
+                                }
+                            }
                         }
                     }
                 }
