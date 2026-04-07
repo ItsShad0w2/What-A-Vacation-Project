@@ -46,7 +46,6 @@ public class LogIn extends AppCompatActivity
             Intent intent = new Intent(this, SignIn.class);
             startActivity(intent);
         });
-
     }
 
     public void logIn()
