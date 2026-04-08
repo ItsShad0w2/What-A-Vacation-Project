@@ -25,7 +25,7 @@ public class LogIn extends AppCompatActivity
 {
 
     EditText editTextEmail, editTextPassword;
-    Button logIn, signIn;
+    Button logIn, signUp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -36,14 +36,14 @@ public class LogIn extends AppCompatActivity
         editTextEmail = findViewById(R.id.editTextEmail);
         editTextPassword = findViewById(R.id.editTextPassword);
         logIn = findViewById(R.id.logIn);
-        signIn = findViewById(R.id.signIn);
+        signUp = findViewById(R.id.signUp);
 
         logIn.setOnClickListener(View -> {
             logIn();
         });
 
-        signIn.setOnClickListener(View -> {
-            Intent intent = new Intent(this, SignIn.class);
+        signUp.setOnClickListener(View -> {
+            Intent intent = new Intent(this, SignUp.class);
             startActivity(intent);
         });
     }
@@ -73,12 +73,14 @@ public class LogIn extends AppCompatActivity
                     if (task.isSuccessful())
                     {
                         FirebaseUser user = firebaseAuth.getCurrentUser();
-                        Toast.makeText(LogIn.this, "Welcome to the application", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(LogIn.this, tripsLayout.class);
-                        intent.putExtra("usersId", user.getUid());
-                        intent.putExtra("loggedIn", true);
-                        startActivity(intent);
-                        finish();
+                        if (user != null)
+                        {
+                            Intent intent = new Intent(LogIn.this, tripsLayout.class);
+                            intent.putExtra("usersId", user.getUid());
+                            intent.putExtra("loggedIn", true);
+                            startActivity(intent);
+                            finish();
+                        }
                     }
                     else
                     {

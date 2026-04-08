@@ -490,6 +490,7 @@ public class TripCreation extends AppCompatActivity
 
            tripView.setVisibility(View.GONE);
            errorLayout.setVisibility(View.VISIBLE);
+           Toast.makeText(TripCreation.this, "An error has occurred while generating the trip", Toast.LENGTH_SHORT).show();
 
            retryButton.setOnClickListener(View -> {
                tripView.setVisibility(View.VISIBLE);

@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -90,7 +91,7 @@ public class tripsLayout extends AppCompatActivity
     {
         // Permission being requested to allow notifications to be sent
 
-        if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S)
+        if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
         {
             if(checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_DENIED)
             {

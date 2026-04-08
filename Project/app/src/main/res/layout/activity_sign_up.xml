@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".SignIn">
+    tools:context=".SignUp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -51,12 +51,12 @@
         android:orientation="vertical">
 
         <Button
-            android:id="@+id/signIn"
+            android:id="@+id/signUp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
-            android:text="Sign In"
+            android:text="Sign Up"
             android:textSize="16dp"
             />
 

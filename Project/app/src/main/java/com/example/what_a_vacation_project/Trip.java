@@ -2,7 +2,6 @@ package com.example.what_a_vacation_project;
 
 import com.google.firebase.database.PropertyName;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 

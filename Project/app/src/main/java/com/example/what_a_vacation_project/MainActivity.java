@@ -12,7 +12,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity
 {
-    Button buttonLogIn, buttonSignIn;
+    Button buttonLogIn, buttonSignUp;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         buttonLogIn = findViewById(R.id.buttonLogIn);
-        buttonSignIn = findViewById(R.id.buttonSignIn);
+        buttonSignUp = findViewById(R.id.buttonSignUp);
 
         checkUserLoggedIn();
 
@@ -29,8 +29,8 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);
         });
 
-        buttonSignIn.setOnClickListener(view -> {
-            Intent intent = new Intent(this, SignIn.class);
+        buttonSignUp.setOnClickListener(view -> {
+            Intent intent = new Intent(this, SignUp.class);
             startActivity(intent);
         });
     }

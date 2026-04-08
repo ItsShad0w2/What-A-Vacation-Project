@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -57,7 +58,7 @@ public class TripDetails extends AppCompatActivity
     TextView conditionView;
     ImageView levelView;
     ImageButton calendarButton;
-    Button generateTripButton;
+    Button generateTripButton, tripLayoutButton;
     private String startDate = "";
     private String endDate = "";
     private List<String> listedCountries = new ArrayList<>();
@@ -81,6 +82,7 @@ public class TripDetails extends AppCompatActivity
         generateTripDetails = findViewById(R.id.generateTripDetails);
         calendarButton = findViewById(R.id.calendarButton);
         generateTripButton = findViewById(R.id.generateTripButton);
+        tripLayoutButton = findViewById(R.id.tripLayoutButton);
         conditionView = findViewById(R.id.conditionView);
         levelView = findViewById(R.id.levelView);
         conditionAPI = new ConditionAPI();
@@ -96,7 +98,13 @@ public class TripDetails extends AppCompatActivity
             setTrip();
         });
 
-        ArrayAdapter<String> adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, getCountries());
+        tripLayoutButton.setOnClickListener(View -> {
+            Intent intent = new Intent(this, tripsLayout.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+        });
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, getCountries());
         countries.setAdapter(adapter);
 
         countries.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -282,7 +290,6 @@ public class TripDetails extends AppCompatActivity
                                 originalStartDate = startDate;
                                 originalEndDate = endDate;
 
-
                                 Intent intent = new Intent(this, TripCreation.class);
                                 intent.putExtra("tripId", currentTripId);
                                 intent.putExtra("change", changed);
@@ -290,7 +297,6 @@ public class TripDetails extends AppCompatActivity
                             }
                         });
                     }
-
                 }
             }
         }

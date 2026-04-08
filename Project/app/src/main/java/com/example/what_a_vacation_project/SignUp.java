@@ -18,31 +18,29 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseNetworkException;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
-import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
-import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
 
-public class SignIn extends AppCompatActivity
+public class SignUp extends AppCompatActivity
 {
     EditText editTextEmail, editTextPassword, editTextName;
-    Button signIn, logIn;
+    Button signUp, logIn;
     private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sign_in);
+        setContentView(R.layout.activity_sign_up);
 
         editTextEmail = findViewById(R.id.editTextEmail);
         editTextPassword = findViewById(R.id.editTextPassword);
         editTextName = findViewById(R.id.editTextName);
-        signIn = findViewById(R.id.signIn);
+        signUp = findViewById(R.id.signUp);
         logIn = findViewById(R.id.logIn);
         
-        signIn.setOnClickListener(View -> {
-            signIn();
+        signUp.setOnClickListener(View -> {
+            signUp();
         });
 
         logIn.setOnClickListener(View -> {
@@ -52,7 +50,7 @@ public class SignIn extends AppCompatActivity
 
     }
 
-    public void signIn()
+    public void signUp()
     {
         // Signing up the user to the application and creating a new user in the database
 
@@ -86,8 +84,7 @@ public class SignIn extends AppCompatActivity
                         FirebaseUser user = firebaseAuth.getCurrentUser();
                         if (user != null)
                         {
-                            Toast.makeText(SignIn.this, "Welcome to the application", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(SignIn.this, tripsLayout.class);
+                            Intent intent = new Intent(SignUp.this, tripsLayout.class);
                             startActivity(intent);
                         }
                     } 
@@ -97,23 +94,23 @@ public class SignIn extends AppCompatActivity
 
                         if (exception instanceof FirebaseAuthInvalidCredentialsException)
                         {
-                            Toast.makeText(SignIn.this, "Invalid credentials, make sure you've entered valid email and password", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(SignUp.this, "Invalid credentials, make sure you've entered valid email and password", Toast.LENGTH_SHORT).show();
                         }
                         else
                         {
                             if (exception instanceof FirebaseAuthUserCollisionException)
                             {
-                                Toast.makeText(SignIn.this, "User already exists", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(SignUp.this, "User already exists", Toast.LENGTH_SHORT).show();
                             }
                             else
                             {
                                 if (exception instanceof FirebaseNetworkException)
                                 {
-                                    Toast.makeText(SignIn.this, "Make sure you're connected to an internet service", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(SignUp.this, "Make sure you're connected to an internet service", Toast.LENGTH_SHORT).show();
                                 }
                                 else
                                 {
-                                    Toast.makeText(SignIn.this, "An error has occurred, please try later to sign up", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(SignUp.this, "An error has occurred, please try later to sign up", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         }
