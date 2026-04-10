@@ -2,7 +2,7 @@ package com.example.what_a_vacation_project;
 
 public class LocationsPrompts
 {
-    public static final String locationsStructure(String country, String startDate, String endDate, String description, long daysDifference)
+    public static String locationsStructure(String country, String startDate, String endDate, String description, long daysDifference)
     {
         return  filter(description) + "\n " +
                 "Return only the text of a JSON object regarding the following structure of finding and organizing the locations for the trip:\n " +
@@ -22,10 +22,10 @@ public class LocationsPrompts
                 "Ensure that every single day from Day 1 to Day " + daysDifference + " is included. Do not ignore this message and skip dates." + "\n" +
                 "Remember, the entire response must be a single valid JSON object that contains lists of days containing different locations suggested.";
     }
-    public static final String filter(String description)
+    public static String filter(String description)
     {
         return "Analyze the user's description which is " + description + "\n " +
-               "In case that this description is entirely unrelated to travel, tourism, and trip preferences, " + "\n " +
+               "In case that this description is unrelated to travel, tourism, and trip preferences in the slightest, " + "\n " +
                "you're obliged to abort and return an empty JSON object " + "\n " +
                "{}" + "\n " +
                "Completely not generate locations and other text. Do not ignore this message.";

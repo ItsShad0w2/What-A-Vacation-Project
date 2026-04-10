@@ -1,17 +1,7 @@
 package com.example.what_a_vacation_project;
 
-import static com.example.what_a_vacation_project.Firebase.getReferenceTrip;
-
-import android.app.AlarmManager;
-import android.app.AlertDialog;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -26,8 +16,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.util.Pair;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.datepicker.CalendarConstraints;
 import com.google.android.material.datepicker.DateValidatorPointForward;
@@ -99,7 +87,7 @@ public class TripDetails extends AppCompatActivity
         });
 
         tripLayoutButton.setOnClickListener(View -> {
-            Intent intent = new Intent(this, tripsLayout.class);
+            Intent intent = new Intent(this, TripsLayout.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(intent);
         });
@@ -122,7 +110,7 @@ public class TripDetails extends AppCompatActivity
 
         if(currentTripId != null)
         {
-            getReferenceTrip(Firebase.firebaseAuth.getUid()).child(currentTripId).addListenerForSingleValueEvent(new ValueEventListener() {
+            Firebase.getReferenceTrip(Firebase.firebaseAuth.getUid()).child(currentTripId).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot)
                 {
@@ -199,13 +187,13 @@ public class TripDetails extends AppCompatActivity
                 @Override
                 public void onFailure(String error)
                 {
-                    Toast.makeText(com.example.what_a_vacation_project.TripDetails.this, "An error has occurred.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(com.example.what_a_vacation_project.TripDetails.this, "An error has occurred while loading the traveling advice.", Toast.LENGTH_SHORT).show();
                 }
             });
         }
         catch (Exception exception)
         {
-            Toast.makeText(this, "An error has occurred.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "An error has occurred while loading the traveling advice.", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -226,6 +214,7 @@ public class TripDetails extends AppCompatActivity
                 !startDate.equals(originalStartDate) ||
                 !endDate.equals(originalEndDate);
     }
+
     public void setTrip()
     {
         // Acquiring the data of the trip and saving it inside of the database
@@ -251,7 +240,7 @@ public class TripDetails extends AppCompatActivity
             if (!countryFound)
             {
                 countries.setText("");
-                Toast.makeText(this, "Invalid Country", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Make sure the country's name is valid.", Toast.LENGTH_SHORT).show();
             }
             else
             {
@@ -263,11 +252,11 @@ public class TripDetails extends AppCompatActivity
 
                 if (userId != null)
                 {
-                    DatabaseReference referenceUser = getReferenceTrip(userId);
+                    DatabaseReference tripReference = Firebase.getReferenceTrip(userId);
 
                     if (currentTripId == null)
                     {
-                        currentTripId = referenceUser.push().getKey();
+                        currentTripId = tripReference.push().getKey();
                     }
 
                     if (currentTripId != null)
@@ -280,7 +269,7 @@ public class TripDetails extends AppCompatActivity
                         tripData.put("Country", countries.getText().toString());
                         tripData.put("Description", generateTripDetails.getText().toString());
 
-                        referenceUser.child(currentTripId).updateChildren(tripData).addOnCompleteListener(task ->
+                        tripReference.child(currentTripId).updateChildren(tripData).addOnCompleteListener(task ->
                         {
                             if (task.isSuccessful())
                             {
@@ -308,43 +297,32 @@ public class TripDetails extends AppCompatActivity
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault());
         simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+
         long current = MaterialDatePicker.todayInUtcMilliseconds();
         CalendarConstraints.Builder constraints = new CalendarConstraints.Builder();
+
+        constraints.setValidator(DateValidatorPointForward.from(current));
 
         MaterialDatePicker.Builder<Pair<Long, Long>> builder = MaterialDatePicker.Builder.dateRangePicker();
         builder.setTitleText("Select the trip's range of dates");
 
-        if(originalStartDate == null || originalEndDate == null || originalStartDate.isEmpty() || originalEndDate.isEmpty())
+        try
         {
-            constraints.setValidator(DateValidatorPointForward.from(current));
-        }
-        else
-        {
-            try
-            {
+            if (originalStartDate != null && !originalStartDate.isEmpty() && originalEndDate != null && !originalEndDate.isEmpty()) {
                 Date startDate = simpleDateFormat.parse(originalStartDate);
                 Date endDate = simpleDateFormat.parse(originalEndDate);
 
-                if(startDate != null && endDate != null)
+                if (startDate != null && endDate != null)
                 {
-                    if (startDate.getTime() < current)
-                    {
-                        constraints.setValidator(DateValidatorPointForward.from(startDate.getTime()));
-                    }
-                    else
-                    {
-                        constraints.setValidator(DateValidatorPointForward.from(current));
-                    }
-
                     builder.setSelection(Pair.create(startDate.getTime(), endDate.getTime()));
                     constraints.setOpenAt(startDate.getTime());
+                    constraints.setStart(startDate.getTime());
                 }
-
             }
-            catch (Exception exception)
-            {
-                constraints.setValidator(DateValidatorPointForward.from(current));
-            }
+        }
+        catch (Exception exception)
+        {
+            constraints.setValidator(DateValidatorPointForward.from(current));
         }
 
         builder.setCalendarConstraints(constraints.build());
@@ -442,7 +420,7 @@ public class TripDetails extends AppCompatActivity
             }
             else
             {
-                conditionView.setText("No conditions found for this country or it doesn't exist. Make sure you're typing the country's name correctly.");
+                conditionView.setText("There is no current traveling advice for the country written.");
                 levelView.setVisibility(View.INVISIBLE);
             }
         }

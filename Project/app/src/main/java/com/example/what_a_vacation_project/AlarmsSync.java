@@ -57,7 +57,7 @@ public class AlarmsSync extends ListenableWorker
                                 if(trip != null)
                                 {
                                     trip.setIdTrip(dataSnapshot.getKey());
-                                    tripsLayout.setScheduleAlarm(getApplicationContext(), trip);
+                                    TripsLayout.setScheduleAlarm(getApplicationContext(), trip);
                                 }
                             }
                         }
@@ -68,7 +68,7 @@ public class AlarmsSync extends ListenableWorker
                     @Override
                     public void onCancelled(@androidx.annotation.NonNull DatabaseError error)
                     {
-                        // Attempting to do another schedule the alarms in case of an error
+                        // Attempting to do another schedule of the alarms in case of an error
 
                         completer.set(Result.retry());
                     }

@@ -18,7 +18,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseNetworkException;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
-import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseUser;
 
 public class LogIn extends AppCompatActivity
@@ -75,9 +74,7 @@ public class LogIn extends AppCompatActivity
                         FirebaseUser user = firebaseAuth.getCurrentUser();
                         if (user != null)
                         {
-                            Intent intent = new Intent(LogIn.this, tripsLayout.class);
-                            intent.putExtra("usersId", user.getUid());
-                            intent.putExtra("loggedIn", true);
+                            Intent intent = new Intent(LogIn.this, TripsLayout.class);
                             startActivity(intent);
                             finish();
                         }

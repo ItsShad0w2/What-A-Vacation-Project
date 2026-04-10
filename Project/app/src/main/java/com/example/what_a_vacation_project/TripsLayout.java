@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,7 +28,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
-public class tripsLayout extends AppCompatActivity
+public class TripsLayout extends AppCompatActivity
 {
 
     RecyclerView recyclerView;
@@ -54,7 +55,7 @@ public class tripsLayout extends AppCompatActivity
             @Override
             public void onTripClick(Trip trip)
             {
-                Intent intent = new Intent(tripsLayout.this, TripDetails.class);
+                Intent intent = new Intent(TripsLayout.this, TripDetails.class);
                 intent.putExtra("tripId", trip.getIdTrip());
                 startActivity(intent);
             }
@@ -118,7 +119,7 @@ public class tripsLayout extends AppCompatActivity
                     {
                         trip.setIdTrip(tripSnapshot.getKey());
                         tripsList.add(trip);
-                        setScheduleAlarm(tripsLayout.this, trip);
+                        setScheduleAlarm(TripsLayout.this, trip);
                     }
                 }
 
@@ -128,7 +129,8 @@ public class tripsLayout extends AppCompatActivity
             @Override
             public void onCancelled(@NonNull DatabaseError error)
             {
-
+                Log.e("Exception", "The error for loading the trips was " + error.getMessage());
+                Toast.makeText(TripsLayout.this, "An error has occurred while loading the trips", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -141,12 +143,15 @@ public class tripsLayout extends AppCompatActivity
         builder.setTitle("Delete Trip");
         builder.setMessage("Are you sure you want to delete this trip?");
         builder.setPositiveButton("Yes", (dialogInterface, i) -> {
-            Firebase.getReferenceTrip(Firebase.firebaseAuth.getUid()).child(trip.getIdTrip()).removeValue().addOnCompleteListener(aVoid -> {
+
+            Firebase.getReferenceTrip(Firebase.firebaseAuth.getUid()).child(trip.getIdTrip()).removeValue();
+
+            Firebase.getReferenceLocation(trip.getIdTrip()).removeValue().addOnCompleteListener(aVoid -> {
                 tripsList.remove(position);
                 adapter.notifyItemRemoved(position);
                 adapter.notifyItemRangeChanged(position, tripsList.size());
 
-                //Cancel the alarm in case it does exist
+                //Cancel the alarm of the trip
                 cancelScheduleAlarm(trip);
             });
 
@@ -194,14 +199,13 @@ public class tripsLayout extends AppCompatActivity
         // Set the alarm to a day prior to the trip's start date
         // That is in case that the trip wasn't set on the day it occurs
 
-        long tripTime = convertDateToMillis(trip.getStartDate());
+        long tripTime = setTimeOfAlarm(trip.getStartDate());
         long currentTime = System.currentTimeMillis();
 
         long dayInMillis = 86400000;
 
         if((tripTime - currentTime) >= dayInMillis)
         {
-            long alarmTime = tripTime - dayInMillis;
 
             AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
@@ -214,7 +218,7 @@ public class tripsLayout extends AppCompatActivity
 
             if (alarmManager != null)
             {
-                alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
+                alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, tripTime, pendingIntent);
                 Log.d("AlarmManager", "Alarm was set");
             }
         }
@@ -237,7 +241,7 @@ public class tripsLayout extends AppCompatActivity
         }
     }
 
-    public static long convertDateToMillis(String date)
+    public static long setTimeOfAlarm(String date)
     {
         // Set the time of the alarm being sent to a time around 8:00 AM
 
@@ -250,6 +254,9 @@ public class tripsLayout extends AppCompatActivity
             calendar.set(Calendar.HOUR_OF_DAY, 8);
             calendar.set(Calendar.MINUTE, 0);
             calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
+
+            calendar.add(Calendar.DAY_OF_YEAR, -1);
 
             return calendar.getTimeInMillis();
         }

@@ -27,6 +27,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.reflect.TypeToken;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -143,7 +144,7 @@ public class TripCreation extends AppCompatActivity
         }
 
         homePage.setOnClickListener(View -> {
-            Intent intent = new Intent(this, tripsLayout.class);
+            Intent intent = new Intent(this, TripsLayout.class);
             startActivity(intent);
         });
 
@@ -168,7 +169,7 @@ public class TripCreation extends AppCompatActivity
         progressDialog.setCancelable(false);
         progressDialog.show();
 
-        DatabaseReference referenceLocations = Firebase.getReferenceTrip(Firebase.firebaseAuth.getUid()).child(tripId).child("Locations");
+        DatabaseReference referenceLocations = Firebase.getReferenceLocation(tripId);
 
         referenceLocations.addListenerForSingleValueEvent(new ValueEventListener()
         {
@@ -209,7 +210,9 @@ public class TripCreation extends AppCompatActivity
             @Override
             public void onCancelled(@NonNull DatabaseError error)
             {
-
+                progressDialog.dismiss();
+                Toast.makeText(TripCreation.this, "An error has occurred while loading the trip", Toast.LENGTH_SHORT).show();
+                returnToTripDetails();
             }
         });
     }
@@ -272,7 +275,7 @@ public class TripCreation extends AppCompatActivity
                                         // Returning to the previous screen due to the preferences not matching what is related to a trip
 
                                         progressDialog.dismiss();
-                                        Toast.makeText(TripCreation.this, "The preference for the trip don't seem to be related to a one, make sure to change it accordingly.", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(TripCreation.this, "Make sure the preferences written for the trip are related to a one.", Toast.LENGTH_LONG).show();
                                         returnToTripDetails();
                                     }
                                 }
@@ -326,7 +329,7 @@ public class TripCreation extends AppCompatActivity
         // Calculating the number of days between the starting date and the end date of the trip in order to generate the trip for each day it occurs
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault());
-        long difference = 0;
+        long difference;
 
         try
         {
@@ -359,8 +362,7 @@ public class TripCreation extends AppCompatActivity
                 Type type = new TypeToken<Map<String, List<Location>>>() {}.getType();
                 Map<String, List<Location>> locations = gson.fromJson(trimmedResponse, type);
 
-                DatabaseReference referenceTrip = Firebase.getReferenceTrip(Firebase.firebaseAuth.getUid());
-                referenceTrip.child(tripId).child("Locations").setValue(locations);
+                Firebase.getReferenceLocation(tripId).setValue(locations);
 
                 return locations;
             }
@@ -490,7 +492,6 @@ public class TripCreation extends AppCompatActivity
 
            tripView.setVisibility(View.GONE);
            errorLayout.setVisibility(View.VISIBLE);
-           Toast.makeText(TripCreation.this, "An error has occurred while generating the trip", Toast.LENGTH_SHORT).show();
 
            retryButton.setOnClickListener(View -> {
                tripView.setVisibility(View.VISIBLE);
@@ -505,10 +506,11 @@ public class TripCreation extends AppCompatActivity
                builder.setTitle("Delete current trip");
                builder.setMessage("Are you sure you want to delete the current trip?");
                builder.setPositiveButton("Yes", (dialogInterface, i) -> {
-                   DatabaseReference referenceTrip = Firebase.getReferenceTrip(Firebase.firebaseAuth.getUid());
-                   referenceTrip.child(tripId).removeValue();
 
-                   Intent intent = new Intent(TripCreation.this, tripsLayout.class);
+                   Firebase.getReferenceTrip(Firebase.firebaseAuth.getUid()).child(tripId).removeValue();
+                   Firebase.getReferenceLocation(tripId).removeValue();
+
+                   Intent intent = new Intent(TripCreation.this, TripsLayout.class);
                    startActivity(intent);
                });
 

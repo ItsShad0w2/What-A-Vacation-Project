@@ -72,9 +72,9 @@ public class Condition
 
     public String toString()
     {
-        return  "The travelling advice for this country is - '" + field_overall_advice_level + '\'' +
+        return  "The traveling advice for this country is - '" + field_overall_advice_level + '\'' +
                 "\n" +
-                ",\n Last updated - '" + changed + '\'' +
+                "\n Last updated - '" + changed + '\'' +
                 "\n";
 
 

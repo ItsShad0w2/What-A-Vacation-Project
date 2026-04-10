@@ -32,7 +32,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 
-public class ConditionAPI implements CallBack
+public class ConditionAPI
 {
     private String conditionMet = "";
     private static final String fileName = "conditions.json";
@@ -247,17 +247,6 @@ public class ConditionAPI implements CallBack
         {
             return null;
         }
-
-    }
-    @Override
-    public void onSuccess(String conditions)
-    {
-
-    }
-
-    @Override
-    public void onFailure(String error)
-    {
 
     }
 }

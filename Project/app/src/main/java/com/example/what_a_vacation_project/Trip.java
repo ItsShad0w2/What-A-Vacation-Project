@@ -12,7 +12,6 @@ public class Trip
     @PropertyName("Country")
     private String country;
     private String idTrip;
-    private Map<String, List<Location>> locations;
     @PropertyName("Description")
     private String description;
     @PropertyName("StartDate")
@@ -20,13 +19,12 @@ public class Trip
     @PropertyName("EndDate")
     private String endDate;
 
-    public Trip(String name, String country, String idTrip, String description, Map<String, List<Location>> locations, String startDate, String endDate)
+    public Trip(String name, String country, String idTrip, String description, String startDate, String endDate)
     {
         this.name = name;
         this.country = country;
         this.idTrip = idTrip;
         this.description = description;
-        this.locations = locations;
         this.startDate = startDate;
         this.endDate = endDate;
     }
@@ -56,11 +54,6 @@ public class Trip
     public String getDescription()
     {
         return description;
-    }
-
-    public Map<String, List<Location>> getLocations()
-    {
-        return locations;
     }
 
     @PropertyName("StartDate")
@@ -96,10 +89,6 @@ public class Trip
     {
         this.description = description;
     }
-    public void setLocations(Map<String, List<Location>> locations)
-    {
-        this.locations = locations;
-    }
     @PropertyName("StartDate")
     public void setStartDate(String startDate)
     {
@@ -111,6 +100,5 @@ public class Trip
     {
         this.endDate = endDate;
     }
-
 
 }

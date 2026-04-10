@@ -24,7 +24,7 @@
             android:name=".TripDetails"
             android:exported="false" />
         <activity
-            android:name=".tripsLayout"
+            android:name=".TripsLayout"
             android:exported="false" />
         <activity
             android:name=".SignUp"

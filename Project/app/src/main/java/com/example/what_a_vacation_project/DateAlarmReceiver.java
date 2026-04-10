@@ -26,7 +26,7 @@ public class DateAlarmReceiver extends BroadcastReceiver
 
         String action = intent.getAction();
 
-        if(Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction()) || Intent.ACTION_USER_PRESENT.equals(intent.getAction()))
+        if(Intent.ACTION_BOOT_COMPLETED.equals(action) || Intent.ACTION_USER_PRESENT.equals(action))
         {
             // Handling the schedule of the alarms while there is internet connection
 
@@ -49,7 +49,8 @@ public class DateAlarmReceiver extends BroadcastReceiver
             {
                 String tripName = intent.getStringExtra("tripName");
 
-                if (tripName != null) {
+                if (tripName != null)
+                {
                     Notification.setNotification(context, tripName);
                 }
             }

@@ -84,8 +84,9 @@ public class SignUp extends AppCompatActivity
                         FirebaseUser user = firebaseAuth.getCurrentUser();
                         if (user != null)
                         {
-                            Intent intent = new Intent(SignUp.this, tripsLayout.class);
+                            Intent intent = new Intent(SignUp.this, TripsLayout.class);
                             startActivity(intent);
+                            finish();
                         }
                     } 
                     else 
