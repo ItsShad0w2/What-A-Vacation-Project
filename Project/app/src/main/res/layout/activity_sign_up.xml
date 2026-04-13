@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
@@ -7,12 +7,23 @@
     android:orientation="vertical"
     tools:context=".SignUp">
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/background_sign_up"
+        android:scaleType="centerCrop"/>
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:gravity="center"
+        android:layout_height="match_parent"
         android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
 
             <EditText
                 android:id="@+id/editTextEmail"
@@ -20,7 +31,8 @@
                 android:layout_height="50dp"
                 android:layout_gravity="center"
                 android:hint="Enter your email: "
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                android:textStyle="bold"/>
 
             <EditText
                 android:id="@+id/editTextPassword"
@@ -31,7 +43,7 @@
                 android:hint="Enter your password: "
                 android:textSize="18sp"
                 android:inputType="textPassword"
-                />
+                android:textStyle="bold"/>
 
             <EditText
                 android:id="@+id/editTextName"
@@ -40,36 +52,37 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="20dp"
                 android:hint="Enter your name: "
-                android:textSize="18sp" />
-    </LinearLayout>
+                android:textSize="18sp"
+                android:textStyle="bold"/>
+        </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:orientation="vertical">
-
-        <Button
-            android:id="@+id/signUp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:gravity="center"
-            android:text="Sign Up"
-            android:textSize="16dp"
-            />
+            android:orientation="vertical">
 
-        <Button
-            android:id="@+id/logIn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="20dp"
-            android:textSize="16dp"
-            android:text="To Log In"
-            />
+            <Button
+                android:id="@+id/signUp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="Sign Up"
+                android:textSize="16dp"
+               android:backgroundTint="#33FFFFFF"/>
 
+            <Button
+                android:id="@+id/logIn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                android:textSize="16dp"
+                android:text="To Log In"
+                android:backgroundTint="#33FFFFFF"/>
 
+        </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+</FrameLayout>

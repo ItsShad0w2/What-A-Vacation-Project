@@ -54,35 +54,40 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Try again"
-            android:layout_marginTop="10dp"/>
+            android:layout_marginTop="10dp"
+            android:backgroundTint="#66263238"/>
 
         <Button
             android:id="@+id/deleteTrip"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Delete Trip"
-            android:layout_marginTop="10dp"/>
+            android:layout_marginTop="10dp"
+            android:backgroundTint="#66263238"/>
 
     </LinearLayout>
     
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:background="#66263238">
         
         <Button
             android:id="@+id/previousScreen"
             android:layout_width="205dp"
             android:layout_height="50dp"
             android:text="Previous Screen"
-            android:textSize="18dp"/>
+            android:textSize="18dp"
+            android:backgroundTint="#CCD6D6D6"/>
 
         <Button
             android:id="@+id/homePage"
             android:layout_width="205dp"
             android:layout_height="50dp"
             android:text="Home Page"
-            android:textSize="18dp"/>
+            android:textSize="18dp"
+            android:backgroundTint="#CCD6D6D6"/>
 
     </LinearLayout>
         

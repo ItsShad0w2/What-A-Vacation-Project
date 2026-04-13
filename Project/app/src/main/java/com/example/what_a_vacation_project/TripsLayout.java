@@ -6,10 +6,13 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.RenderEffect;
+import android.graphics.Shader;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -31,6 +34,7 @@ import java.util.Locale;
 public class TripsLayout extends AppCompatActivity
 {
 
+    ImageView backgroundTripsLayout;
     RecyclerView recyclerView;
     TripAdapter adapter;
     Button addTrip, logout;
@@ -44,9 +48,17 @@ public class TripsLayout extends AppCompatActivity
 
         permissions();
 
+        backgroundTripsLayout = findViewById(R.id.backgroundTripsLayout);
         recyclerView = findViewById(R.id.tripsList);
         addTrip = findViewById(R.id.addTrip);
         logout = findViewById(R.id.logout);
+
+        // Blurring the background of the activity
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+        {
+            backgroundTripsLayout.setRenderEffect(RenderEffect.createBlurEffect(15f, 15f, Shader.TileMode.MIRROR));
+        }
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 

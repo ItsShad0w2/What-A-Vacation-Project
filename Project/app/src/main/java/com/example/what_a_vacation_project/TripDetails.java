@@ -1,6 +1,9 @@
 package com.example.what_a_vacation_project;
 
 import android.content.Intent;
+import android.graphics.RenderEffect;
+import android.graphics.Shader;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -44,7 +47,7 @@ public class TripDetails extends AppCompatActivity
     AutoCompleteTextView countries;
     EditText tripName, generateTripDetails;
     TextView conditionView;
-    ImageView levelView;
+    ImageView levelView, backgroundTripDetails;
     ImageButton calendarButton;
     Button generateTripButton, tripLayoutButton;
     private String startDate = "";
@@ -73,7 +76,15 @@ public class TripDetails extends AppCompatActivity
         tripLayoutButton = findViewById(R.id.tripLayoutButton);
         conditionView = findViewById(R.id.conditionView);
         levelView = findViewById(R.id.levelView);
+        backgroundTripDetails = findViewById(R.id.backgroundTripDetails);
         conditionAPI = new ConditionAPI();
+
+        // Blurring the background of the activity
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+        {
+            backgroundTripDetails.setRenderEffect(RenderEffect.createBlurEffect(20f, 20f, Shader.TileMode.MIRROR));
+        }
 
         if (getIntent().hasExtra("tripId"))
         {
