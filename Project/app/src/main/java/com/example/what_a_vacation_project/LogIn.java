@@ -44,6 +44,7 @@ public class LogIn extends AppCompatActivity
         signUp.setOnClickListener(View -> {
             Intent intent = new Intent(this, SignUp.class);
             startActivity(intent);
+            finish();
         });
     }
 
