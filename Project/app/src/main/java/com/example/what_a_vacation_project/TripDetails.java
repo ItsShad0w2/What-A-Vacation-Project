@@ -5,6 +5,7 @@ import android.graphics.RenderEffect;
 import android.graphics.Shader;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -33,6 +34,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -94,7 +96,14 @@ public class TripDetails extends AppCompatActivity
         loadExistingTrip();
 
         generateTripButton.setOnClickListener(View -> {
-            setTrip();
+            try
+            {
+                setTrip();
+            }
+            catch (ParseException exception)
+            {
+                throw new RuntimeException(exception);
+            }
         });
 
         tripLayoutButton.setOnClickListener(View -> {
@@ -139,8 +148,8 @@ public class TripDetails extends AppCompatActivity
                         endDate = originalEndDate;
 
                         tripName.setText(originalName);
-                        countries.setText(originalCountry);
-                        generateTripDetails.setText(originalDescription);
+                        countries.setText(originalCountry.trim(), false);
+                        generateTripDetails.setText(originalDescription.trim());
 
                         if(!countries.getText().toString().isEmpty() && countries != null)
                         {
@@ -184,7 +193,7 @@ public class TripDetails extends AppCompatActivity
     {
             // Calling the API to get the travel advice regarding the trip's country
 
-        String country = countries.getText().toString();
+        String country = countries.getText().toString().trim();
         try
         {
             conditionAPI.getConditions(adjustments(country), com.example.what_a_vacation_project.TripDetails.this, new CallBack()
@@ -226,79 +235,100 @@ public class TripDetails extends AppCompatActivity
                 !endDate.equals(originalEndDate);
     }
 
-    public void setTrip()
+    public void setTrip() throws ParseException
     {
         // Acquiring the data of the trip and saving it inside of the database
 
-        if (tripName.getText().toString().isEmpty() || startDate.isEmpty() || endDate.isEmpty() || countries.getText().toString().isEmpty() || generateTripDetails.getText().toString().isEmpty())
+        try
         {
-            Toast.makeText(this, "Please fill in all of the required fields", Toast.LENGTH_SHORT).show();
-        }
-        else
-        {
-            // Checking that the country set is valid
-
-            boolean countryFound = false;
-            for (String country : listedCountries)
+            if (tripName.getText().toString().isEmpty() || startDate.isEmpty() || endDate.isEmpty() || countries.getText().toString().isEmpty() || generateTripDetails.getText().toString().isEmpty())
             {
-                if (country.equals(countries.getText().toString()))
-                {
-                    countryFound = true;
-                    break;
-                }
-            }
-
-            if (!countryFound)
-            {
-                countries.setText("");
-                Toast.makeText(this, "Make sure the country's name is valid.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Please fill in all of the required fields", Toast.LENGTH_SHORT).show();
             }
             else
             {
-                // The save of the trip's data inside of the database
-                // Ensuring that in case the details of the trip have changed from its prior, there would be a generation of a new one
+                // Ensuring that the starting date of the trip isn't in the past in case the trip was made and its details are being changed
 
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault());
+                simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+                Date tripStartDate = simpleDateFormat.parse(startDate);
                 boolean changed = hasChanged();
-                String userId = Firebase.firebaseAuth.getUid();
 
-                if (userId != null)
+                if (tripStartDate != null && changed && tripStartDate.before(new Date()))
                 {
-                    DatabaseReference tripReference = Firebase.getReferenceTrip(userId);
+                    Toast.makeText(this, "Make sure the trip's starting date hasn't passed.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-                    if (currentTripId == null)
+                // Checking that the country set is valid
+
+                boolean countryFound = false;
+                for (String country : listedCountries)
+                {
+                    if (country.trim().equals(countries.getText().toString().trim()))
                     {
-                        currentTripId = tripReference.push().getKey();
+                        countryFound = true;
+                        break;
                     }
+                }
 
-                    if (currentTripId != null)
+                if (!countryFound)
+                {
+                    countries.setText("");
+                    Toast.makeText(this, "Make sure the country's name is valid.", Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    // The save of the trip's data inside of the database
+                    // Ensuring that in case the details of the trip have changed from its prior, there would be a generation of a new one
+
+                    String userId = Firebase.firebaseAuth.getUid();
+
+                    if (userId != null)
                     {
-                        Map<String, Object> tripData = new HashMap<>();
+                        DatabaseReference tripReference = Firebase.getReferenceTrip(userId);
 
-                        tripData.put("Name", tripName.getText().toString());
-                        tripData.put("StartDate", startDate);
-                        tripData.put("EndDate", endDate);
-                        tripData.put("Country", countries.getText().toString());
-                        tripData.put("Description", generateTripDetails.getText().toString());
-
-                        tripReference.child(currentTripId).updateChildren(tripData).addOnCompleteListener(task ->
+                        if (currentTripId == null)
                         {
-                            if (task.isSuccessful())
-                            {
-                                originalName = tripName.getText().toString();
-                                originalCountry = countries.getText().toString();
-                                originalDescription = generateTripDetails.getText().toString();
-                                originalStartDate = startDate;
-                                originalEndDate = endDate;
+                            currentTripId = tripReference.push().getKey();
+                        }
 
-                                Intent intent = new Intent(this, TripCreation.class);
-                                intent.putExtra("tripId", currentTripId);
-                                intent.putExtra("change", changed);
-                                startActivity(intent);
-                            }
-                        });
+                        if (currentTripId != null)
+                        {
+                            Map<String, Object> tripData = new HashMap<>();
+
+                            tripData.put("Name", tripName.getText().toString());
+                            tripData.put("StartDate", startDate);
+                            tripData.put("EndDate", endDate);
+                            tripData.put("Country", countries.getText().toString().trim());
+                            tripData.put("Description", generateTripDetails.getText().toString());
+
+                            tripReference.child(currentTripId).updateChildren(tripData).addOnCompleteListener(task ->
+                            {
+                                if (task.isSuccessful())
+                                {
+                                    originalName = tripName.getText().toString();
+                                    originalCountry = countries.getText().toString().trim();
+                                    originalDescription = generateTripDetails.getText().toString();
+                                    originalStartDate = startDate;
+                                    originalEndDate = endDate;
+
+                                    Intent intent = new Intent(this, TripCreation.class);
+                                    intent.putExtra("tripId", currentTripId);
+                                    intent.putExtra("change", changed);
+                                    startActivity(intent);
+                                }
+                            });
+                        }
                     }
                 }
             }
+        }
+        catch(Exception exception)
+        {
+            Toast.makeText(this, "An error has occurred while generating the trip", Toast.LENGTH_SHORT).show();
+            Log.e("Exception", exception.getMessage());
         }
     }
 
@@ -362,7 +392,10 @@ public class TripDetails extends AppCompatActivity
             String line;
             while((line = bufferedReader.readLine()) != null)
             {
-                listedCountries.add(line);
+                if(!line.trim().isEmpty())
+                {
+                    listedCountries.add(line);
+                }
             }
 
             bufferedReader.close();
@@ -415,7 +448,7 @@ public class TripDetails extends AppCompatActivity
         }
         else
         {
-            if(countries.getText().toString().equalsIgnoreCase("Australia"))
+            if(countries.getText().toString().trim().equalsIgnoreCase("Australia"))
             {
                 // Due to the API being of the Australian officials' advice, a one was set to Australia itself as the API doesn't contain data on it
 

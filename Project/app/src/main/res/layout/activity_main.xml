@@ -29,30 +29,33 @@
             android:textSize="26dp"
             android:text="Welcome to the application \n    Ready to plan your trip?"/>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:gravity = "center"
-                android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:gravity = "center"
+            android:layout_height="match_parent">
 
             <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:orientation="vertical"
-                android:layout_width="wrap_content"
-                android:gravity = "center"
-                android:layout_height="match_parent">
+                android:gravity = "center">
 
                 <Button
                     android:id="@+id/buttonLogIn"
                     android:layout_width="155dp"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="left"
                     android:text="Log In"
                     android:backgroundTint="#66263238"/>
 
             </LinearLayout>
 
             <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_width="match_parent"
                 android:layout_gravity="right"
+                android:layout_weight="1"
                 android:gravity="center"
                 android:orientation="vertical">
 
@@ -61,8 +64,8 @@
                     android:layout_width="155dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="right"
-                    android:text="Sign Up"
-                    android:backgroundTint="#66263238"/>
+                    android:backgroundTint="#66263238"
+                    android:text="Sign Up" />
 
             </LinearLayout>
         </LinearLayout>
