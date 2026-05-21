@@ -456,7 +456,7 @@ public class TripDetails extends AppCompatActivity
                 condition = new Condition(
                         "Australia",
                         "Exercise normal safety precautions",
-                        "As last checked and reviewed, travelling in Australia is safe for all travellers. You may want to be alert for any kinds of protests that are occurring in the country due to potential unrest and violence if not taking caution. Take note that this is not from an official advisory and might not be up to date. You may refer to the URL below for the current and official advice.",
+                        "As last checked and reviewed, traveling in Australia is safe for all travellers. You may want to be alert for any kinds of protests that are occurring in the country due to potential unrest and violence if not taking caution. Take note that this is not from an official advisory and might not be up to date. You may refer to official traveling sites for the current travel advice.",
                         date(),
                         "https://travel.gc.ca/destinations/australia");
 
