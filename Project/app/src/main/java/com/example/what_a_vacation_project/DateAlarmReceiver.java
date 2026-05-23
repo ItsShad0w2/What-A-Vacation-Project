@@ -43,15 +43,15 @@ public class DateAlarmReceiver extends BroadcastReceiver
         }
         else
         {
-            // Handling the sending of notifications to the user when the alarm is triggered using an action that is set for the alarm
+            // Handling the sending of notifications to the user when the alarm is triggered using the trip's name and the ID of the trip
 
-            if(action != null && action.equals("com.example.what_a_vacation_project.Alarm"))
+            if(action != null)
             {
                 String tripName = intent.getStringExtra("tripName");
 
                 if (tripName != null)
                 {
-                    Notification.setNotification(context, tripName);
+                    Notification.setNotification(context, tripName, tripName.hashCode());
                 }
             }
         }
