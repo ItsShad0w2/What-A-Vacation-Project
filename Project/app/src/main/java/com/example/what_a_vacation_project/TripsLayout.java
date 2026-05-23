@@ -208,22 +208,19 @@ public class TripsLayout extends AppCompatActivity
             return;
         }
 
-        // Set the alarm to a day prior to the trip's start date
-        // That is in case that the trip wasn't set on the day it occurs
+        // Set the alarm prior to the trip's start date
+        // That is in case that the trip wasn't set past the hour 8:00 AM on the day prior to the trip's starting date
 
         long tripTime = setTimeOfAlarm(trip.getStartDate());
         long currentTime = System.currentTimeMillis();
 
-        long dayInMillis = 86400000;
-
-        if((tripTime - currentTime) >= dayInMillis)
+        if(tripTime > currentTime)
         {
 
             AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
             Intent intent = new Intent(context, DateAlarmReceiver.class);
             intent.putExtra("tripName", trip.getName());
-            intent.setAction("com.example.what_a_vacation_project.Alarm");
             int requestID = trip.getIdTrip().hashCode();
 
             PendingIntent pendingIntent = PendingIntent.getBroadcast(context, requestID, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);

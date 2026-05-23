@@ -112,7 +112,7 @@ public class TripDetails extends AppCompatActivity
             startActivity(intent);
         });
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, getCountries());
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.custom_dropdown_item, getCountries());
         countries.setAdapter(adapter);
 
         countries.setOnItemClickListener(new AdapterView.OnItemClickListener() {

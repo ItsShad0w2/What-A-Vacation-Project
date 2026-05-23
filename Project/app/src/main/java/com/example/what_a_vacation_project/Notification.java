@@ -11,9 +11,8 @@ public class Notification
 {
     private static final String CHANNEL_ID = "channelID";
     private static final String CHANNEL_NAME = "channelName";
-    private static final int notificationID = 1;
 
-    public static void setNotification(Context context, String tripName)
+    public static void setNotification(Context context, String tripName, int notificationID)
     {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
