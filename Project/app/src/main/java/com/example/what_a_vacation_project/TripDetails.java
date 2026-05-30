@@ -83,9 +83,9 @@ public class TripDetails extends AppCompatActivity
 
         // Blurring the background of the activity
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
         {
-            backgroundTripDetails.setRenderEffect(RenderEffect.createBlurEffect(20f, 20f, Shader.TileMode.MIRROR));
+           backgroundTripDetails.setRenderEffect(RenderEffect.createBlurEffect(20f, 20f, Shader.TileMode.MIRROR));
         }
 
         if (getIntent().hasExtra("tripId"))
@@ -128,13 +128,13 @@ public class TripDetails extends AppCompatActivity
     {
         // Load the trip's data in case that it does exist
 
-        if(currentTripId != null)
+        if (currentTripId != null)
         {
             Firebase.getReferenceTrip(Firebase.firebaseAuth.getUid()).child(currentTripId).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot)
                 {
-                    if(snapshot.exists())
+                    if (snapshot.exists())
                     {
                         // Acquiring the data of the trip and the travel advice of the trip's country, setting it in the fields of the trip
 
@@ -151,7 +151,7 @@ public class TripDetails extends AppCompatActivity
                         countries.setText(originalCountry.trim(), false);
                         generateTripDetails.setText(originalDescription.trim());
 
-                        if(!countries.getText().toString().isEmpty() && countries != null)
+                        if (!countries.getText().toString().isEmpty() && countries != null)
                         {
                             countryAdvice();
                         }
@@ -182,7 +182,7 @@ public class TripDetails extends AppCompatActivity
 
         setIntent(intent);
 
-        if(getIntent().hasExtra("tripId"))
+        if (getIntent().hasExtra("tripId"))
         {
             currentTripId = getIntent().getStringExtra("tripId");
             loadExistingTrip();
@@ -191,7 +191,7 @@ public class TripDetails extends AppCompatActivity
 
     public void countryAdvice()
     {
-            // Calling the API to get the travel advice regarding the trip's country
+        // Calling the API to get the travel advice regarding the trip's country
 
         String country = countries.getText().toString().trim();
         try
@@ -201,12 +201,26 @@ public class TripDetails extends AppCompatActivity
                 @Override
                 public void onSuccess(String conditions)
                 {
+                    // Checking that the screen is still active prior to showing the travel advice
+
+                    if(isFinishing() || isDestroyed())
+                    {
+                        return;
+                    }
+
                     setCondition(conditions);
                 }
 
                 @Override
                 public void onFailure(String error)
                 {
+                    // Checking that the screen is still active prior to showing the travel advice
+
+                    if(isFinishing() || isDestroyed())
+                    {
+                        return;
+                    }
+
                     Toast.makeText(com.example.what_a_vacation_project.TripDetails.this, "An error has occurred while loading the traveling advice.", Toast.LENGTH_SHORT).show();
                 }
             });
@@ -221,7 +235,7 @@ public class TripDetails extends AppCompatActivity
     {
         // A check in case that the details of the trip have changed and generating a new one accordingly
 
-        if(currentTripId == null)
+        if (currentTripId == null)
         {
             return true;
         }
@@ -229,7 +243,7 @@ public class TripDetails extends AppCompatActivity
         String currentCountry = countries.getText().toString().trim();
         String currentDescription = generateTripDetails.getText().toString().trim();
 
-        return  !currentCountry.equals(originalCountry.trim()) ||
+        return !currentCountry.equals(originalCountry.trim()) ||
                 !currentDescription.equals(originalDescription.trim()) ||
                 !startDate.equals(originalStartDate) ||
                 !endDate.equals(originalEndDate);

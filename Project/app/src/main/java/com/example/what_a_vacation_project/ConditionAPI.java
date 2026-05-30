@@ -1,6 +1,8 @@
 package com.example.what_a_vacation_project;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -142,38 +144,49 @@ public class ConditionAPI
         else
         {
             Log.d("APIDebug", "Haven't gotten the data");
-            try
-            {
-                List<Condition> conditions = readData(context);
-                conditionMet = "";
 
-                if(conditions != null)
+            // Using a thread in order to read the data from the folder in the background
+            // This allows the main thread to continue without waiting for the method to finish
+
+            new Thread(() -> {
+                try
                 {
-                    Log.d("APIDebug", "Condition was read");
-                    Gson gson = new Gson();
+                    List<Condition> conditions;
+                    conditions = readData(context);
+                    conditionMet = "";
 
-                    // Search for the country of the trip picked from the data acquired
-
-                    for(Condition condition : conditions)
+                    if (conditions != null)
                     {
-                        if(condition.getTitle() != null && condition.getTitle().equalsIgnoreCase(country))
-                        {
-                            conditionMet = gson.toJson(condition);
-                            break;
-                        }
-                    }
+                        Log.d("APIDebug", "Condition was read");
+                        Gson gson = new Gson();
 
-                    callBack.onSuccess(conditionMet);
+                        // Search for the country of the trip picked from the data acquired
+
+                        for (Condition condition : conditions)
+                        {
+                            if (condition.getTitle() != null && condition.getTitle().equalsIgnoreCase(country))
+                            {
+                                conditionMet = gson.toJson(condition);
+                                break;
+                            }
+                        }
+
+                        new Handler(Looper.getMainLooper()).post(() -> {
+                            callBack.onSuccess(conditionMet);
+                        });
+                    }
+                    else
+                    {
+                        new Handler(Looper.getMainLooper()).post(() -> {
+                            callBack.onFailure("Country not found");
+                        });
+                    }
                 }
-                else
+                catch (IOException exception)
                 {
-                    callBack.onFailure("Country not found");
+                    throw new RuntimeException(exception);
                 }
-            }
-            catch (IOException e)
-            {
-                throw new RuntimeException(e);
-            }
+            }).start();
         }
     }
 
