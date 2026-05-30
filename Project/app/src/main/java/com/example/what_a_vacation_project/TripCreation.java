@@ -382,6 +382,8 @@ public class TripCreation extends AppCompatActivity
 
         List<String> days = new ArrayList<>(locations.keySet());
 
+        // Sorting the days in the list in an ascending order
+
         Collections.sort(days, (item1, item2) -> {
             int num1 = Integer.parseInt(item1.replaceAll("[^0-9]", ""));
             int num2 = Integer.parseInt(item2.replaceAll("[^0-9]", ""));
