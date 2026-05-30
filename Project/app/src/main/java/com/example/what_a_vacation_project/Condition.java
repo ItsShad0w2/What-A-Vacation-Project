@@ -8,6 +8,7 @@ public class Condition
     private String title;
     @SerializedName("field_overall_advice_level")
     private String field_overall_advice_level;
+    @SerializedName("field_last_update")
     private String field_last_update;
     @SerializedName("changed")
     private String changed;
