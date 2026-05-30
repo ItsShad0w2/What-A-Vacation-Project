@@ -12,6 +12,7 @@ public class Condition
     private String field_last_update;
     @SerializedName("changed")
     private String changed;
+    @SerializedName("field_url")
     private String field_url;
 
     public Condition(String title, String field_overall_advice_level, String field_last_update, String changed, String field_url)
