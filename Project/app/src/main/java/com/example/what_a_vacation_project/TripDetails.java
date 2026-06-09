@@ -350,47 +350,71 @@ public class TripDetails extends AppCompatActivity
     {
         // Setting the calendar for the trip's dates including constraints for the selection of dates
 
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault());
-        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        calendarButton.setOnClickListener(view -> {
 
-        long current = MaterialDatePicker.todayInUtcMilliseconds();
-        CalendarConstraints.Builder constraints = new CalendarConstraints.Builder();
+            // Not allowing the user to click on the calendar's button more than one time in a row after clicking it
 
-        constraints.setValidator(DateValidatorPointForward.from(current));
+            calendarButton.setEnabled(false);
 
-        MaterialDatePicker.Builder<Pair<Long, Long>> builder = MaterialDatePicker.Builder.dateRangePicker();
-        builder.setTitleText("Select the trip's range of dates");
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault());
+            simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-        try
-        {
-            if (originalStartDate != null && !originalStartDate.isEmpty() && originalEndDate != null && !originalEndDate.isEmpty()) {
-                Date startDate = simpleDateFormat.parse(originalStartDate);
-                Date endDate = simpleDateFormat.parse(originalEndDate);
+            long current = MaterialDatePicker.todayInUtcMilliseconds();
+            CalendarConstraints.Builder constraints = new CalendarConstraints.Builder();
 
-                if (startDate != null && endDate != null)
-                {
-                    builder.setSelection(Pair.create(startDate.getTime(), endDate.getTime()));
-                    constraints.setOpenAt(startDate.getTime());
-                    constraints.setStart(startDate.getTime());
+            constraints.setValidator(DateValidatorPointForward.from(current));
+
+            MaterialDatePicker.Builder<Pair<Long, Long>> builder = MaterialDatePicker.Builder.dateRangePicker();
+            builder.setTitleText("Select the trip's range of dates");
+
+            try
+            {
+                if (originalStartDate != null && !originalStartDate.isEmpty() && originalEndDate != null && !originalEndDate.isEmpty()) {
+                    Date startDate = simpleDateFormat.parse(originalStartDate);
+                    Date endDate = simpleDateFormat.parse(originalEndDate);
+
+                    if (startDate != null && endDate != null)
+                    {
+                        builder.setSelection(Pair.create(startDate.getTime(), endDate.getTime()));
+                        constraints.setOpenAt(startDate.getTime());
+                        constraints.setStart(startDate.getTime());
+                    }
                 }
             }
-        }
-        catch (Exception exception)
-        {
-            constraints.setValidator(DateValidatorPointForward.from(current));
-        }
+            catch (Exception exception)
+            {
+                constraints.setValidator(DateValidatorPointForward.from(current));
+            }
 
-        builder.setCalendarConstraints(constraints.build());
+            builder.setCalendarConstraints(constraints.build());
 
-        MaterialDatePicker<Pair<Long, Long>> MaterialDatePicker = builder.build();
-        calendarButton.setOnClickListener(View -> {
-            MaterialDatePicker.show(getSupportFragmentManager(), "PICK DATE");
+            MaterialDatePicker<Pair<Long, Long>> MaterialDatePicker = builder.build();
+
+            // Handling the saving of the trip's dates
 
             MaterialDatePicker.addOnPositiveButtonClickListener(selection -> {
+                calendarButton.setEnabled(true);
                 startDate = simpleDateFormat.format(new Date(selection.first));
                 endDate = simpleDateFormat.format(new Date(selection.second));
 
             });
+
+            // Handling the cancellation of the selection dates
+
+            MaterialDatePicker.addOnNegativeButtonClickListener(selection -> {
+                calendarButton.setEnabled(true);
+            });
+
+            MaterialDatePicker.addOnCancelListener(selection -> {
+                calendarButton.setEnabled(true);
+            });
+
+            MaterialDatePicker.addOnDismissListener(selection ->
+            {
+                calendarButton.setEnabled(true);
+            });
+
+            MaterialDatePicker.show(getSupportFragmentManager(), "PICK DATE");
         });
     }
 

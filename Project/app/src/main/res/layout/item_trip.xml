@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
+    app:cardBackgroundColor="@android:color/transparent"
     app:cardCornerRadius="8dp"
     app:cardElevation="4dp">
 
@@ -11,6 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:background="@drawable/item_color"
         android:padding="16dp">
 
         <TextView
@@ -25,13 +27,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14sp"
-            android:layout_marginTop="2dp"/>
+            android:textStyle="bold"
+            android:layout_marginTop="2dp" />
         
         <TextView
             android:id="@+id/textTripDates"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14sp"
+            android:textStyle="bold"
             android:layout_marginTop="4dp"/>
 
         <TextView
@@ -40,6 +44,7 @@
             android:layout_height="wrap_content"
             android:text="Finished"
             android:textSize="10sp"
+            android:textStyle="bold"
             android:layout_marginTop="2dp"/>
 
 

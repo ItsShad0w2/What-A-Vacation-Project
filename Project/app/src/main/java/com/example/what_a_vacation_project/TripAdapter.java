@@ -39,9 +39,9 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder
         // Setting the data of a trip inside of the item stored in the recycler view
 
         Trip trip = tripList.get(position);
-        holder.name.setText(trip.getName());
-        holder.country.setText(trip.getCountry());
-        holder.dates.setText(trip.getStartDate() + " - " + trip.getEndDate());
+        holder.name.setText("Trip's name: " + trip.getName());
+        holder.country.setText("Country: " + trip.getCountry());
+        holder.dates.setText("Dates: " +trip.getStartDate() + " - " + trip.getEndDate());
 
         holder.itemView.setOnClickListener(view -> {
             try
